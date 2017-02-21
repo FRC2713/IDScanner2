@@ -1,7 +1,7 @@
 # IDScanner
 Built way too late at night
 
-To use this, clone the respositoy to any directory, set up a local Mysql database, and open up Main.java and change the final variables to your values. Next step is to set up the database. Execute the following sql commands:
+To use this, clone the respositoy to any directory, set up a local Mysql database, open up Main.java, and change the final variables to your values. Next step is to set up the database. Execute the following sql commands:
 
 ``CREATE SCHEMA `Members` DEFAULT CHARACTER SET utf8;``
 
