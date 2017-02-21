@@ -22,6 +22,7 @@ To use this, clone the respositoy to any directory, set up a local Mysql databas
 
 
 
+(In the following commands use : for Unix and ; for windows)
 Then, in your terminal or command prompt, navigate to the directory you cloned the files and run the commands:
 
 `javac -classpath .:lib/mysql-connector-java-5.1.40-bin.jar Main.java`  and
