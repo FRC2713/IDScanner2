@@ -1,29 +1,17 @@
 package org.iraiders.idscanner2;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
-import java.util.Scanner;
-
 import javax.swing.JOptionPane;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
-  final static String serverName = "localhost";
-  final static int port = 3306;
-  final static String databaseName = "Members";
-  final static String user = "root";
-  final static String password = "root";
+
+  final static String databasePath = "./src/db/members.db";
 
   final static int maxNameLength = 20;
   final static int minNameLength = 3;
   final static int maxIdLength = 20;
   final static int minIdLength = 3;
 
-
-  static Scanner in = new Scanner(System.in);
 
   public static void main(String [] args){
     System.out.println("Starting Connection");
@@ -35,7 +23,7 @@ public class Main {
     do{ //Checks the length of the Id
       id = JOptionPane.showInputDialog("What is your id?");
       if(id == null){
-        return id; //If the user hits cancell it is interpreted as an exit command
+        return id; //If the user hits cancel it is interpreted as an exit command
       }else if(id.length() > maxIdLength){
         JOptionPane.showMessageDialog(null, "IDs are a maximum of "+maxIdLength+" characters.");
       }else if(id.length() < minIdLength){
@@ -62,8 +50,8 @@ public class Main {
   }
 
   static void start(){
-    MemberDatabase store = new MemberDatabase(serverName, port, databaseName, user, password);
-    //System.out.print("What is your id? ");
+    String dbPath = "jdbc:sqlite:"+databasePath;
+    MemberDatabase store = new MemberDatabase(dbPath);
     while(true){
       String id = getUserId();  //Gets the name based on the ID from the database
 
@@ -79,13 +67,13 @@ public class Main {
       }
 	  if(store.active == false){
 		JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-		store = new MemberDatabase(serverName, port, databaseName, user, password);
+		store = new MemberDatabase(dbPath);
 		continue;
 	  }
       String name = store.queryMemberName(id);
 	  if(name.equals("-1")){
 		JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-		store = new MemberDatabase(serverName, port, databaseName, user, password);
+		store = new MemberDatabase(dbPath);
 		continue;
 	  }else if(name.length() < 1){ //If the query returns no name this runs
         //Annother loop the check the length, this time of the name
