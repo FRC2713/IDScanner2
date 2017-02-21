@@ -58,7 +58,10 @@ public class MemberDatabase extends Database{
       res.next();
       name = res.getString("memberName");
     }catch(SQLException e){
-      //System.out.println("Line 17: "+e);
+      //System.out.println("Line 17: "+e.getErrorCode());
+	  if(e.getErrorCode() == 0){
+		  return "-1";
+	  }
       return "";
     }
 
