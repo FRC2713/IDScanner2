@@ -82,6 +82,12 @@ class Main{
           continue;
         }
       }
+      
+      if(store.active == false){ //Checks database connection then retries if it is inactive
+        JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
+        store = new MemberDatabase(serverName, port, databaseName, user, password);
+        continue;
+      }
 
       String name = store.queryMemberName(id);
       if(name.length() < 1){ //If the query returns no name this runs
