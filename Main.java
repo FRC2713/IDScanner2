@@ -62,7 +62,7 @@ class Main{
         JOptionPane.showMessageDialog(null, "Names are a minimum of "+minNameLength+" characters.");
       }
     }while(name.length() > maxNameLength || name.length() < minNameLength);
-    System.out.println("Name is: "+name);
+    //System.out.println("Name is: "+name);
     return name;
   }
 
@@ -94,7 +94,7 @@ class Main{
       }
 
       if(store.updateAttendance(id)){
-        System.out.println("Welcome "+name);  //After all the logic is done the user is welcomed
+        //System.out.println("Welcome "+name);  //After all the logic is done the user is welcomed
         JOptionPane.showMessageDialog(null, "Thanks for coming, " + name + "!");
       }else{
         JOptionPane.showMessageDialog(null, "You can only log in once per meeting "+name+"."); //if false is returned then the person already logged in
