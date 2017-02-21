@@ -19,7 +19,6 @@ public class MemberDatabase extends Database{
     String today = dateFormat.format(new Date());
     double time = System.currentTimeMillis();
 
-
     try{
       stmt = conn.createStatement();
       res = stmt.executeQuery("SELECT * FROM Members.memberAttendance WHERE memberId = '"+memberId+"'");

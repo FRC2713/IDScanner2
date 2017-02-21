@@ -40,14 +40,14 @@ class Main{
     do{ //Checks the length of the Id
       id = JOptionPane.showInputDialog("What is your id?");
       if(id == null){
-        break; //If the user hits cancell it is interpreted as an exit command
+        return id; //If the user hits cancell it is interpreted as an exit command
       }else if(id.length() > maxIdLength){
         JOptionPane.showMessageDialog(null, "IDs are a maximum of "+maxIdLength+" characters.");
       }else if(id.length() < minIdLength){
         JOptionPane.showMessageDialog(null, "IDs are a minimum of "+minIdLength+" characters.");
       }
     }while(id.length() > maxIdLength || id.length() < minIdLength);  //Makes sure that the id is inside the bounds provided above
-    return id;
+    return id.toLowerCase();
   }
 
   static String getUserName(){
@@ -71,7 +71,7 @@ class Main{
     //System.out.print("What is your id? ");
     while(true){
       String id = getUserId();  //Gets the name based on the ID from the database
-      String name = store.queryMemberName(id);
+
 
       //These are conditional statements that allow certain IDs or Names to do certain things
       if(id == null){
@@ -81,7 +81,10 @@ class Main{
         }else{
           continue;
         }
-      }else if(name.length() < 1){ //If the query returns no name this runs
+      }
+
+      String name = store.queryMemberName(id);
+      if(name.length() < 1){ //If the query returns no name this runs
         //Annother loop the check the length, this time of the name
         name = getUserName();
         //Name is null if the user presses cancel
