@@ -18,7 +18,6 @@ public class MemberDatabase extends Database{
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     String today = dateFormat.format(new Date());
     double time = System.currentTimeMillis();
-    System.out.println("Today is: "+today+" at time "+time);
 
 
     try{
