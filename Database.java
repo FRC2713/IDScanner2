@@ -4,14 +4,14 @@
 //in order to get the MysqlDataSource
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-//import com.mysql.jdbc.Statement;
-//import com.mysql.jdbc.Connection;
+
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
 abstract public class Database{
+  boolean active = false;
   Connection conn;
   Statement stmt;
   ResultSet res;
@@ -24,10 +24,11 @@ abstract public class Database{
     dataSource.setPortNumber(port);
     dataSource.setDatabaseName(databaseN);
     dataSource.setUser(user);
-    dataSource.setPassword(pass);
+    //dataSource.setPassword(pass);
     try{
       conn = dataSource.getConnection();
       System.out.println("Connected to Database");
+	  active = true;
     }catch(SQLException e){
       System.out.println("Sql error: "+e);
     }
