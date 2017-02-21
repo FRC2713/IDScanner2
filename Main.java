@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 @SuppressWarnings("InfiniteLoopStatement")
 class Main{
   final static String serverName = "localhost";
-  final static int port = 8889;
+  final static int port = 3306;
   final static String databaseName = "Members";
   final static String user = "root";
   final static String password = "root";
@@ -82,15 +82,17 @@ class Main{
           continue;
         }
       }
-      
-      if(store.active == false){ //Checks database connection then retries if it is inactive
-        JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-        store = new MemberDatabase(serverName, port, databaseName, user, password);
-        continue;
-      }
-
+	  if(store.active == false){
+		JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
+		store = new MemberDatabase(serverName, port, databaseName, user, password);
+		continue;
+	  }
       String name = store.queryMemberName(id);
-      if(name.length() < 1){ //If the query returns no name this runs
+	  if(name.equals("-1")){
+		JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
+		store = new MemberDatabase(serverName, port, databaseName, user, password);
+		continue;
+	  }else if(name.length() < 1){ //If the query returns no name this runs
         //Annother loop the check the length, this time of the name
         name = getUserName();
         //Name is null if the user presses cancel
