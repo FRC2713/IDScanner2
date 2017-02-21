@@ -1,9 +1,4 @@
-//Uses a Mysql database to work. You must connect this to a database for it to function.
-
-//Must compile and run this with:
-//javac -classpath .:/Users/aidandempster/Desktop/RoboticsScanner/src/lib/mysql-connector-java-5.1.40-bin.jar Main.java and
-//java -classpath .:/Users/aidandempster/Desktop/RoboticsScanner/src/lib/mysql-connector-java-5.1.40-bin.jar Main
-//in order to use the MysqlDataSource class for Database.java
+package org.iraiders.idscanner2;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,7 +10,7 @@ import java.util.Scanner;
 import javax.swing.JOptionPane;
 
 @SuppressWarnings("InfiniteLoopStatement")
-class Main{
+public class Main {
   final static String serverName = "localhost";
   final static int port = 3306;
   final static String databaseName = "Members";

@@ -1,3 +1,5 @@
+package org.iraiders.idscanner2;
+
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 import java.sql.Connection;
