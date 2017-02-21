@@ -3,9 +3,9 @@ Built way too late at night
 
 To use this, clone the respositoy to any directory, set up a local Mysql database, and open up Main.java and change the final variables to your values. Next step is to set up the database. Execute the following sql commands:
 
-``CREATE SCHEMA `Members2` DEFAULT CHARACTER SET utf8;``
+``CREATE SCHEMA `Members` DEFAULT CHARACTER SET utf8;``
 
-``CREATE TABLE `memberAttendance` (
+``CREATE TABLE `Members`.`memberAttendance` (
   `memberId` varchar(45) NOT NULL,
   `date` varchar(15) NOT NULL,
   `time` double NOT NULL,
@@ -13,7 +13,7 @@ To use this, clone the respositoy to any directory, set up a local Mysql databas
   UNIQUE KEY `time_UNIQUE` (`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8``
 
-``CREATE TABLE `members` (
+``CREATE TABLE `Members`.`members` (
   `memberId` varchar(45) NOT NULL,
   `memberName` varchar(45) NOT NULL,
   PRIMARY KEY (`memberId`),
