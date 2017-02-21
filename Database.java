@@ -24,7 +24,7 @@ abstract public class Database{
     dataSource.setPortNumber(port);
     dataSource.setDatabaseName(databaseN);
     dataSource.setUser(user);
-    //dataSource.setPassword(pass);
+    dataSource.setPassword(pass);
     try{
       conn = dataSource.getConnection();
       System.out.println("Connected to Database");
