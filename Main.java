@@ -1,3 +1,5 @@
+//Uses a Mysql database to work. You must connect this to a database for it to function.
+
 //Must compile and run this with:
 //javac -classpath .:/Users/aidandempster/Desktop/RoboticsScanner/src/lib/mysql-connector-java-5.1.40-bin.jar Main.java and
 //java -classpath .:/Users/aidandempster/Desktop/RoboticsScanner/src/lib/mysql-connector-java-5.1.40-bin.jar Main
