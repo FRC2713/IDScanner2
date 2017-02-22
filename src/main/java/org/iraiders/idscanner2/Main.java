@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
-  final private static String databasePath = "./src/db/members.db";
+  final private static String databasePath = "./db/members.db";
 
   final private static int maxNameLength = 20;
   final private static int minNameLength = 3;
