@@ -20,8 +20,8 @@ abstract public class Database{
       conn = DriverManager.getConnection(url);
       if (conn != null) {
         DatabaseMetaData meta = conn.getMetaData();
-        System.out.println("The driver name is " + meta.getDriverName());
-        System.out.println("A new database has been created.");
+        //System.out.println("The driver name is " + meta.getDriverName());
+        //System.out.println("A new database has been created.");
         active = true;
       }
     }catch(SQLException e){

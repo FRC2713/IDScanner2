@@ -56,7 +56,7 @@ public class MemberDatabase extends Database{
 
   public String queryMemberName(String memberId){
     //return "" == does not exist;
-    String name = "";
+    String name;
     boolean next = true;
     try{
       stmt = conn.createStatement();
@@ -65,8 +65,8 @@ public class MemberDatabase extends Database{
       name = res.getString("memberName");
     }catch(SQLException e){
       //System.out.println("Line 17: "+e.getErrorCode());
-	  if(e.getErrorCode() == 0 && next == true){
-	      System.out.println(next +"Error: "+e);
+	  if(e.getErrorCode() == 0 && next){
+	      //System.out.println("Error: "+e);
 		  return "-1";
 	  }
       return "";

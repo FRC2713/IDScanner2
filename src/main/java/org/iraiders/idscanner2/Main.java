@@ -5,7 +5,7 @@ import javax.swing.JOptionPane;
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
 
-  final static String databasePath = "./src/db/members.db";
+  final static String databasePath = "./db/members.db";
 
   final static int maxNameLength = 20;
   final static int minNameLength = 3;
@@ -23,7 +23,7 @@ public class Main {
     do{ //Checks the length of the Id
       id = JOptionPane.showInputDialog("What is your id?");
       if(id == null){
-        return id; //If the user hits cancel it is interpreted as an exit command
+        return null; //If the user hits cancel it is interpreted as an exit command
       }else if(id.length() > maxIdLength){
         JOptionPane.showMessageDialog(null, "IDs are a maximum of "+maxIdLength+" characters.");
       }else if(id.length() < minIdLength){
@@ -65,7 +65,7 @@ public class Main {
           continue;
         }
       }
-	  if(store.active == false){
+	  if(!store.active){
 		JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
 		store = new MemberDatabase(dbPath);
 		continue;
