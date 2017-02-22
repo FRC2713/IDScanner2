@@ -9,7 +9,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 
 abstract public class Database{
-  boolean active = false;
+  boolean active = false; //False when a connection is not achieved. True if one is.
   Connection conn;
   Statement stmt;
   ResultSet res;
