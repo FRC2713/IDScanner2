@@ -50,8 +50,8 @@ public class Main {
 
   static void startAdmin(String dbPath){
       System.out.println("Admin Activating");
-      //AdminCommands admin = new AdminCommands(dbPath);
-      //System.out.println(admin.getNumAttendance("600740"));
+      AdminCommands admin = new AdminCommands(dbPath);
+      System.out.println(admin.getNumAttendance("600740"));
   }
 
   static void start(){
