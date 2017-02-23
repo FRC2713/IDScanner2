@@ -51,7 +51,29 @@ public class Main {
   static void startAdmin(String dbPath){
       System.out.println("Admin Activating");
       AdminCommands admin = new AdminCommands(dbPath);
-      System.out.println(admin.getNumAttendance("600740"));
+      String command = JOptionPane.showInputDialog("What command would you like to execute?");
+      if(command == null) {
+          //do nothing
+      }else if(command.equalsIgnoreCase("change name")){
+          String id = JOptionPane.showInputDialog("What Id");
+          String name = JOptionPane.showInputDialog("What is the new name?");
+          if(id == null || name == null) {
+              startAdmin(dbPath);
+          }else{
+              if(!admin.changeName(id, name)){
+                  JOptionPane.showMessageDialog(null, "Name Change Failed");
+              }else{
+                  JOptionPane.showMessageDialog(null, "Name Changed");
+              }
+          }
+      }else if(command.equalsIgnoreCase("get attendance")){
+          String id = JOptionPane.showInputDialog("What Id");
+          if(id == null) {
+              startAdmin(dbPath);
+          }else{
+              JOptionPane.showMessageDialog(null, id+" has attended "+admin.getNumAttendance(id)+" times");
+          }
+      }
   }
 
   static void start(){
