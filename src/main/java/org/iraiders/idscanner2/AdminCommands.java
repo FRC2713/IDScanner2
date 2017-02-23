@@ -4,9 +4,9 @@ import java.sql.*;
 
 public class AdminCommands {
     private String databasePath;
-    Connection conn;
-    Statement stmt;
-    ResultSet res;
+    private Connection conn;
+    private Statement stmt;
+    private ResultSet res;
 
     public AdminCommands(String dbPath){
         databasePath = dbPath;
@@ -14,27 +14,23 @@ public class AdminCommands {
             conn = DriverManager.getConnection(dbPath);
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
+                conn.close();
             }
-            conn.close();
         }catch(SQLException e){
             System.out.println("Sql error: "+e);
         }
     }
 
-    boolean openConn(){
+    private boolean openConn(){
         try {
             conn = DriverManager.getConnection(databasePath);
-        }catch(SQLException e){
-            return false;
-        }
-        if(conn != null){
-            return true;
-        }else{
+            return (conn != null);
+        }catch(SQLException e) {
             return false;
         }
     }
 
-    boolean closeConn(){
+    private boolean closeConn(){
         try{
             conn.close();
             return true;
@@ -45,7 +41,6 @@ public class AdminCommands {
 
     public int getNumAttendance(String memberId){
         openConn();
-        boolean next = true;
         int meetingCounter = 0;
         try{
             stmt = conn.createStatement();
@@ -55,7 +50,7 @@ public class AdminCommands {
             }
             closeConn();
         }catch(SQLException e){
-            if(e.getErrorCode() == 0 && next == true){ //If the code does not reach the res.next() then next remains true.
+            if(e.getErrorCode() == 0){ //If the code does not reach the res.next() then next remains true.
                 System.out.println("Error: "+e);
                 meetingCounter = 0;
             }
@@ -66,7 +61,7 @@ public class AdminCommands {
 
     public int getPercentAttendance(String memberId){
         return 0;
-    }
+    } //Needs to use the total number of meetings. what is the best way to handle that?
 
     public boolean changeName(String memberId, String newName){
         try{

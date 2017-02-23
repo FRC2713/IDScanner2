@@ -49,7 +49,6 @@ public class Main {
   }
 
   static void startAdmin(String dbPath){
-      System.out.println("Admin Activating");
       AdminCommands admin = new AdminCommands(dbPath);
       String command = JOptionPane.showInputDialog("What command would you like to execute?");
       if(command == null) {
