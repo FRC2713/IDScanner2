@@ -38,7 +38,6 @@ public class AdminCommands extends Database{
             stmt = conn.createStatement();
             res = stmt.executeQuery("SELECT memberName FROM members WHERE memberId='"+memberId+"'");
             if(!res.next()){
-                System.out.println("Line 48");
                 res.close();
                 stmt.close();
                 return false;

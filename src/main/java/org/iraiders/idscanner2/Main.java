@@ -11,6 +11,8 @@ public class Main {
   final private static int maxIdLength = 20;
   final private static int minIdLength = 3;
 
+  private static MemberDatabase store;
+
 
   public static void main(String [] args){
     System.out.println("Starting Connection");
@@ -61,8 +63,10 @@ public class Main {
           }else{
               if(!admin.changeName(id, name)){
                   JOptionPane.showMessageDialog(null, "Name Change Failed");
+                  startAdmin(dbPath);
               }else{
                   JOptionPane.showMessageDialog(null, "Name Changed");
+                  startAdmin(dbPath);
               }
           }
       }else if(command.equalsIgnoreCase("get attendance")){
@@ -70,10 +74,16 @@ public class Main {
           if(id == null) {
               startAdmin(dbPath);
           }else{
-              JOptionPane.showMessageDialog(null, id+" has attended "+admin.getNumAttendance(id)+" times");
+              String name = store.queryMemberName(id);
+              if(name.length() < 1){
+                  name = id;
+              }
+              JOptionPane.showMessageDialog(null, name+" has attended "+admin.getNumAttendance(id)+" times");
+              startAdmin(dbPath);
           }
       }else if(command.equalsIgnoreCase("help")){
         JOptionPane.showMessageDialog(null, "Get Attendance: Display attendance by ID\nChange Name: Change name by ID");
+        startAdmin(dbPath);
       }else{
           JOptionPane.showMessageDialog(null, "That command does not exist");
           startAdmin(dbPath);
@@ -82,7 +92,7 @@ public class Main {
 
   static void start(){
     String dbPath = "jdbc:sqlite:"+databasePath;
-    MemberDatabase store = new MemberDatabase(dbPath);
+    store = new MemberDatabase(dbPath);
     while(true){
       if(!store.active){ // If the database can't connect
           try {
