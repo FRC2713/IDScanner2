@@ -31,7 +31,7 @@ public class AdminCommands extends Database{
 
     public int getPercentAttendance(String memberId){
         return 0;
-    } //Needs to use the total number of meetings. what is the best way to handle that?
+    } //Needs to use the total number of meetings. what is the best way to handle that? Maybe take the max attendance and use that as the total.
 
     public boolean changeName(String memberId, String newName){
         try{
