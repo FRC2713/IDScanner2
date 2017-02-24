@@ -15,6 +15,7 @@ public class MemberDatabase extends Database{
       stmt = conn.createStatement();
       stmt.execute(createMember);
       stmt.execute(createAttendance);
+      stmt.close();
     }catch(SQLException e){
       System.out.println(e.getMessage());
     }

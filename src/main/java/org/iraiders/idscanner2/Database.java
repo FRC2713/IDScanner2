@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 
+import java.io.File;
+
 abstract public class Database{
   boolean active = false; //False when a connection is not achieved. True if one is.
   static Connection conn;
@@ -17,8 +19,17 @@ abstract public class Database{
 
     public Database(String url){
     try{
+        File dir = new File("db"); //Creating the db directory if it does not already exist.
+
+        boolean success = dir.mkdir();
+
+        if(success){
+            System.out.println("Created db directory");
+        }
+
         if(conn == null){
             conn = DriverManager.getConnection(url);
+            System.out.println("New Connection to database open");
         }
 
         if (conn != null) {

@@ -72,6 +72,8 @@ public class Main {
           }else{
               JOptionPane.showMessageDialog(null, id+" has attended "+admin.getNumAttendance(id)+" times");
           }
+      }else if(command.equalsIgnoreCase("help")){
+        JOptionPane.showMessageDialog(null, "Get Attendance: Display attendance by ID\nChange Name: Change name by ID");
       }else{
           JOptionPane.showMessageDialog(null, "That command does not exist");
           startAdmin(dbPath);

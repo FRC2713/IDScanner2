@@ -10,28 +10,6 @@ public class AdminCommands extends Database{
         super(dbPath);
     }
 
-    /*private boolean openConn(){
-        try {
-            conn = DriverManager.getConnection(databasePath);
-            System.out.println("Connection open");
-            return (conn != null);
-        }catch(SQLException e) {
-            System.out.println("Failed to open connection: "+e);
-            return false;
-        }
-    }
-
-    private boolean closeConn(){
-        try{
-            conn.close();
-            System.out.println("Connection closed");
-            return true;
-        }catch(SQLException e){
-            System.out.println("Failed to close connections: "+e);
-            return false;
-        }
-    }*/
-
     public int getNumAttendance(String memberId){
         int meetingCounter = 0;
         try{
@@ -73,8 +51,6 @@ public class AdminCommands extends Database{
                 return true;
             }else {
                 stmt = conn.createStatement();
-                System.out.println("Line 56: success, newName: "+newName+", ID: "+memberId+", current name: "+currentName);
-                System.out.println("Executing updates");
                 stmt.executeUpdate("UPDATE members SET memberName='" + newName + "' WHERE memberId='" + memberId + "'");
                 stmt.close();
                 return true;
