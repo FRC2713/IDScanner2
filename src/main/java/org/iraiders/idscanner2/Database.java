@@ -10,15 +10,18 @@ import java.sql.DriverManager;
 
 abstract public class Database{
   boolean active = false; //False when a connection is not achieved. True if one is.
-  Connection conn;
+  static Connection conn;
   Statement stmt;
   ResultSet res;
 
 
-  public Database(String url){
+    public Database(String url){
     try{
-      conn = DriverManager.getConnection(url);
-      if (conn != null) {
+        if(conn == null){
+            conn = DriverManager.getConnection(url);
+        }
+
+        if (conn != null) {
         DatabaseMetaData meta = conn.getMetaData();
         //System.out.println("The driver name is " + meta.getDriverName());
         //System.out.println("A new database has been created.");

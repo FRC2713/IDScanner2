@@ -50,7 +50,7 @@ public class Main {
 
   static void startAdmin(String dbPath){
       AdminCommands admin = new AdminCommands(dbPath);
-      String command = JOptionPane.showInputDialog("What command would you like to execute?");
+      String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
       if(command == null) {
           //do nothing
       }else if(command.equalsIgnoreCase("change name")){
@@ -72,6 +72,9 @@ public class Main {
           }else{
               JOptionPane.showMessageDialog(null, id+" has attended "+admin.getNumAttendance(id)+" times");
           }
+      }else{
+          JOptionPane.showMessageDialog(null, "That command does not exist");
+          startAdmin(dbPath);
       }
   }
 

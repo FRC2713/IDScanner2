@@ -2,30 +2,21 @@ package org.iraiders.idscanner2;
 
 import java.sql.*;
 
-public class AdminCommands {
-    private String databasePath;
-    private Connection conn;
+public class AdminCommands extends Database{
     private Statement stmt;
     private ResultSet res;
 
     public AdminCommands(String dbPath){
-        databasePath = dbPath;
-        try{
-            conn = DriverManager.getConnection(dbPath);
-            if (conn != null) {
-                DatabaseMetaData meta = conn.getMetaData();
-                conn.close();
-            }
-        }catch(SQLException e){
-            System.out.println("Sql error: "+e);
-        }
+        super(dbPath);
     }
 
-    private boolean openConn(){
+    /*private boolean openConn(){
         try {
             conn = DriverManager.getConnection(databasePath);
+            System.out.println("Connection open");
             return (conn != null);
         }catch(SQLException e) {
+            System.out.println("Failed to open connection: "+e);
             return false;
         }
     }
@@ -33,14 +24,15 @@ public class AdminCommands {
     private boolean closeConn(){
         try{
             conn.close();
+            System.out.println("Connection closed");
             return true;
         }catch(SQLException e){
+            System.out.println("Failed to close connections: "+e);
             return false;
         }
-    }
+    }*/
 
     public int getNumAttendance(String memberId){
-        openConn();
         int meetingCounter = 0;
         try{
             stmt = conn.createStatement();
@@ -48,13 +40,13 @@ public class AdminCommands {
             while(res.next()){
                 meetingCounter++;
             }
-            closeConn();
+            res.close();
+            stmt.close();
         }catch(SQLException e){
-            if(e.getErrorCode() == 0){ //If the code does not reach the res.next() then next remains true.
+            if(e.getErrorCode() == 0){
                 System.out.println("Error: "+e);
                 meetingCounter = 0;
             }
-            closeConn();
         }
         return meetingCounter;
     }
@@ -65,32 +57,30 @@ public class AdminCommands {
 
     public boolean changeName(String memberId, String newName){
         try{
-            openConn();
             stmt = conn.createStatement();
             res = stmt.executeQuery("SELECT memberName FROM members WHERE memberId='"+memberId+"'");
             if(!res.next()){
                 System.out.println("Line 48");
                 res.close();
+                stmt.close();
                 return false;
             }
             String currentName = res.getString("memberName");
+            res.close();
+            stmt.close();
             if(newName.equals(currentName)) {
                 System.out.println("Line 53");
-                res.close();
-                closeConn();
                 return true;
             }else {
-                res.close();
-                stmt.close();
                 stmt = conn.createStatement();
-                System.out.println("Line 56: success");
+                System.out.println("Line 56: success, newName: "+newName+", ID: "+memberId+", current name: "+currentName);
+                System.out.println("Executing updates");
                 stmt.executeUpdate("UPDATE members SET memberName='" + newName + "' WHERE memberId='" + memberId + "'");
-                closeConn();
+                stmt.close();
                 return true;
             }
         }catch(SQLException e){
             System.out.println("Line 61: "+e);
-            closeConn();
             return false;
         }
     }

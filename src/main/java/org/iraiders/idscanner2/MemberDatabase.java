@@ -63,6 +63,8 @@ public class MemberDatabase extends Database{
       res = stmt.executeQuery("SELECT * FROM members WHERE memberId='"+memberId+"'");
       next = res.next();
       name = res.getString("memberName");
+      res.close();
+      stmt.close();
     }catch(SQLException e){
       //System.out.println("Line 17: "+e.getErrorCode());
 	  if(e.getErrorCode() == 0 && next){
