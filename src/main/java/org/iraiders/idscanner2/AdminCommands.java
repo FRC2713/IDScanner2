@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.sql.*;
-
 import java.io.*;
 
 public class AdminCommands extends Database{
@@ -59,11 +58,11 @@ public class AdminCommands extends Database{
                 writer.close();
                 return true;
             }catch(FileNotFoundException|UnsupportedEncodingException e){
-                System.out.println("Error: "+e);
+                e.printStackTrace();
                 return false;
             }
         }catch(SQLException e){
-            System.out.println("Write File SQLException: "+e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -71,16 +70,17 @@ public class AdminCommands extends Database{
     public int getNumAttendance(String memberId){
         int meetingCounter = 0;
         try{
-            stmt = conn.createStatement();
-            res = stmt.executeQuery("SELECT * FROM memberAttendance WHERE memberId='"+memberId+"'");
+            pstmt = conn.prepareStatement("SELECT * FROM memberAttendance WHERE memberId=?");
+            pstmt.setString(1, memberId);
+            res = pstmt.executeQuery();
             while(res.next()){
                 meetingCounter++;
             }
             res.close();
-            stmt.close();
+            pstmt.close();
         }catch(SQLException e){
             if(e.getErrorCode() == 0){
-                System.out.println("Error: "+e);
+                e.printStackTrace();
                 meetingCounter = 0;
             }
         }
@@ -104,7 +104,7 @@ public class AdminCommands extends Database{
 
             return (int) percent;
         }catch(SQLException e){
-            System.out.println("Line 37: "+e);
+            e.printStackTrace();
         }
 
         return 0;
@@ -112,27 +112,29 @@ public class AdminCommands extends Database{
 
     public boolean changeName(String memberId, String newName){
         try{
-            stmt = conn.createStatement();
-            res = stmt.executeQuery("SELECT memberName FROM members WHERE memberId='"+memberId+"'");
+            pstmt = conn.prepareStatement("SELECT memberName FROM members WHERE memberId=?");
+            pstmt.setString(1, memberId);
+            res = pstmt.executeQuery();
             if(!res.next()){
                 res.close();
-                stmt.close();
+                pstmt.close();
                 return false;
             }
             String currentName = res.getString("memberName");
             res.close();
-            stmt.close();
+            pstmt.close();
             if(newName.equals(currentName)) {
-                System.out.println("Line 53");
                 return true;
             }else {
-                stmt = conn.createStatement();
-                stmt.executeUpdate("UPDATE members SET memberName='" + newName + "' WHERE memberId='" + memberId + "'");
-                stmt.close();
+                pstmt = conn.prepareStatement("UPDATE members SET memberName=? WHERE memberId=?");
+                pstmt.setString(1, newName);
+                pstmt.setString(2, memberId);
+                pstmt.executeUpdate();
+                pstmt.close();
                 return true;
             }
         }catch(SQLException e){
-            System.out.println("Line 61: "+e);
+            e.printStackTrace();
             return false;
         }
     }

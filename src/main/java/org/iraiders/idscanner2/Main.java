@@ -47,22 +47,17 @@ public class Main {
         JOptionPane.showMessageDialog(null, "Names are a minimum of "+minNameLength+" characters.");
       }
     }while(name.length() > maxNameLength || name.length() < minNameLength);
-    //System.out.println("Name is: "+name);
     return name;
   }
 
   static void startAdmin(String dbPath){
       AdminCommands admin = new AdminCommands(dbPath);
-      String command;
-      do {
-          command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
-          if (command == null) {
-              //do nothing
-          } else if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
+      String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");;
+      while(command != null){
+          if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
               String id = JOptionPane.showInputDialog("What Id");
               String name = JOptionPane.showInputDialog("What is the new name?");
-              if (id == null || name == null) {
-              } else {
+              if (!(id == null || name == null)) {
                   if (!admin.changeName(id, name)) {
                       JOptionPane.showMessageDialog(null, "Name Change Failed");
                   } else {
@@ -87,7 +82,8 @@ public class Main {
           } else {
               JOptionPane.showMessageDialog(null, "That command does not exist");
           }
-      }while(command != null);
+          command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
+      }
   }
 
   static void start(){
@@ -115,6 +111,7 @@ public class Main {
         }
       }
       if(id.equalsIgnoreCase("Admin")){
+          //JOptionPane.showInputDialog("What is your name?");
           startAdmin(dbPath);
       }else {
           String name = store.queryMemberName(id);
