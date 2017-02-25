@@ -53,46 +53,41 @@ public class Main {
 
   static void startAdmin(String dbPath){
       AdminCommands admin = new AdminCommands(dbPath);
-      String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
-      if(command == null) {
-          //do nothing
-      }else if(command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")){
-          String id = JOptionPane.showInputDialog("What Id");
-          String name = JOptionPane.showInputDialog("What is the new name?");
-          if(id == null || name == null) {
-              startAdmin(dbPath);
-          }else{
-              if(!admin.changeName(id, name)){
-                  JOptionPane.showMessageDialog(null, "Name Change Failed");
-                  startAdmin(dbPath);
-              }else{
-                  JOptionPane.showMessageDialog(null, "Name Changed");
-                  startAdmin(dbPath);
+      String command;
+      do {
+          command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
+          if (command == null) {
+              //do nothing
+          } else if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
+              String id = JOptionPane.showInputDialog("What Id");
+              String name = JOptionPane.showInputDialog("What is the new name?");
+              if (id == null || name == null) {
+              } else {
+                  if (!admin.changeName(id, name)) {
+                      JOptionPane.showMessageDialog(null, "Name Change Failed");
+                  } else {
+                      JOptionPane.showMessageDialog(null, "Name Changed");
+                  }
               }
-          }
-      }else if(command.equalsIgnoreCase("get attendance") || command.equalsIgnoreCase("ga")){
-          String id = JOptionPane.showInputDialog("What Id");
-          if(id == null) {
-              startAdmin(dbPath);
-          }else{
-              String name = store.queryMemberName(id);
-              if(name.length() < 1){
-                  name = id;
+          } else if (command.equalsIgnoreCase("get attendance") || command.equalsIgnoreCase("ga")) {
+              String id = JOptionPane.showInputDialog("What Id");
+              if (id == null) {
+              } else {
+                  String name = store.queryMemberName(id);
+                  if (name.length() < 1) {
+                      name = id;
+                  }
+                  JOptionPane.showMessageDialog(null, name + " has attended " + admin.getNumAttendance(id) + " times.\nPercentage of max attendance: " + admin.getPercentAttendance(id) + "%");
               }
-              JOptionPane.showMessageDialog(null, name+" has attended "+admin.getNumAttendance(id)+" times.\nPercentage of max attendance: "+admin.getPercentAttendance(id)+"%");
-              startAdmin(dbPath);
+          } else if (command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")) {
+              admin.writeFile(writePath);
+              JOptionPane.showMessageDialog(null, "Writing file");
+          } else if (command.equalsIgnoreCase("help")) {
+              JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
+          } else {
+              JOptionPane.showMessageDialog(null, "That command does not exist");
           }
-      }else if(command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")){
-          admin.writeFile(writePath);
-          JOptionPane.showMessageDialog(null, "Writing file");
-          startAdmin(dbPath);
-      }else if(command.equalsIgnoreCase("help")){
-        JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
-        startAdmin(dbPath);
-      }else{
-          JOptionPane.showMessageDialog(null, "That command does not exist");
-          startAdmin(dbPath);
-      }
+      }while(command != null);
   }
 
   static void start(){
