@@ -55,7 +55,7 @@ public class Main {
       String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
       if(command == null) {
           //do nothing
-      }else if(command.equalsIgnoreCase("change name")){
+      }else if(command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")){
           String id = JOptionPane.showInputDialog("What Id");
           String name = JOptionPane.showInputDialog("What is the new name?");
           if(id == null || name == null) {
@@ -69,7 +69,7 @@ public class Main {
                   startAdmin(dbPath);
               }
           }
-      }else if(command.equalsIgnoreCase("get attendance")){
+      }else if(command.equalsIgnoreCase("get attendance") || command.equalsIgnoreCase("ga")){
           String id = JOptionPane.showInputDialog("What Id");
           if(id == null) {
               startAdmin(dbPath);
@@ -78,11 +78,11 @@ public class Main {
               if(name.length() < 1){
                   name = id;
               }
-              JOptionPane.showMessageDialog(null, name+" has attended "+admin.getNumAttendance(id)+" times");
+              JOptionPane.showMessageDialog(null, name+" has attended "+admin.getNumAttendance(id)+" times.\n"+admin.getPercentAttendance(id)+"%");
               startAdmin(dbPath);
           }
       }else if(command.equalsIgnoreCase("help")){
-        JOptionPane.showMessageDialog(null, "Get Attendance: Display attendance by ID\nChange Name: Change name by ID");
+        JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID");
         startAdmin(dbPath);
       }else{
           JOptionPane.showMessageDialog(null, "That command does not exist");
