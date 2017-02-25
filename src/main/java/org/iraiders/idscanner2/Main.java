@@ -2,6 +2,10 @@ package org.iraiders.idscanner2;
 
 import javax.swing.JOptionPane;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
   final private static String databasePath = "./db/members.db";
@@ -86,6 +90,23 @@ public class Main {
       }
   }
 
+  static boolean checkPassword(String pass){
+      byte[] passHash;
+      try{
+          MessageDigest md = MessageDigest.getInstance("SHA-256");
+          md.update(pass.getBytes("UTF-8"));
+          passHash = md.digest();
+      }catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+          e.printStackTrace();
+          passHash = null;
+      }
+      if(String.format("%064x", new java.math.BigInteger(1, passHash)).equals("e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a")){
+          return true;
+      }else{
+          return false;
+      }
+  }
+
   static void start(){
     String dbPath = databasePath;
     store = new MemberDatabase(dbPath);
@@ -111,8 +132,12 @@ public class Main {
         }
       }
       if(id.equalsIgnoreCase("Admin")){
-          //JOptionPane.showInputDialog("What is your name?");
-          startAdmin(dbPath);
+          String password = JOptionPane.showInputDialog("What is the password?");
+          if(checkPassword(password)){
+              startAdmin(dbPath);
+          }else{
+              JOptionPane.showMessageDialog(null, "Incorrect password.");
+          }
       }else {
           String name = store.queryMemberName(id);
           if (name.equals("-1")) { //
