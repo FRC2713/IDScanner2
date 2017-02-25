@@ -8,164 +8,208 @@ import java.security.NoSuchAlgorithmException;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
-  final private static String databasePath = "./db/members.db";
-  final private static String writePath = "./files/attendance.txt";
+    final private static String databasePath = "./db/members.db";
+    final private static String writePath = "./files/attendance.txt";
 
-  final private static int maxNameLength = 20;
-  final private static int minNameLength = 3;
-  final private static int maxIdLength = 20;
-  final private static int minIdLength = 3;
+    final private static int maxNameLength = 20;
+    final private static int minNameLength = 3;
+    final private static int maxIdLength = 20;
+    final private static int minIdLength = 3;
 
-  private static MemberDatabase store;
+    private static MemberDatabase store;
 
 
-  public static void main(String [] args){
-    System.out.println("Starting Connection");
-    start();
-  }
-
-  static String getUserId(){
-    String id;
-    do{ //Checks the length of the Id
-      id = JOptionPane.showInputDialog("What is your id?");
-      if(id == null){
-        return null; //If the user hits cancel it is interpreted as an exit command
-      }else if(id.length() > maxIdLength){
-        JOptionPane.showMessageDialog(null, "IDs are a maximum of "+maxIdLength+" characters.");
-      }else if(id.length() < minIdLength){
-        JOptionPane.showMessageDialog(null, "IDs are a minimum of "+minIdLength+" characters.");
-      }
-    }while(id.length() > maxIdLength || id.length() < minIdLength);  //Makes sure that the id is inside the bounds provided above
-    return id.toLowerCase();
-  }
-
-  static String getUserName(){
-    String name;
-    do{
-      name = JOptionPane.showInputDialog("What is your name?");
-      if(name == null){
-        break;
-      }else if(name.length() > maxNameLength){
-        JOptionPane.showMessageDialog(null, "Names are a maximum of "+maxNameLength+" characters.");
-      }else if(name.length() < minNameLength){
-        JOptionPane.showMessageDialog(null, "Names are a minimum of "+minNameLength+" characters.");
-      }
-    }while(name.length() > maxNameLength || name.length() < minNameLength);
-    return name;
-  }
-
-  static void startAdmin(String dbPath){
-      AdminCommands admin = new AdminCommands(dbPath);
-      String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");;
-      while(command != null){
-          if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
-              String id = JOptionPane.showInputDialog("What Id");
-              String name = JOptionPane.showInputDialog("What is the new name?");
-              if (!(id == null || name == null)) {
-                  if (!admin.changeName(id, name)) {
-                      JOptionPane.showMessageDialog(null, "Name Change Failed");
-                  } else {
-                      JOptionPane.showMessageDialog(null, "Name Changed");
-                  }
-              }
-          } else if (command.equalsIgnoreCase("get attendance") || command.equalsIgnoreCase("ga")) {
-              String id = JOptionPane.showInputDialog("What Id");
-              if (id == null) {
-              } else {
-                  String name = store.queryMemberName(id);
-                  if (name.length() < 1) {
-                      name = id;
-                  }
-                  JOptionPane.showMessageDialog(null, name + " has attended " + admin.getNumAttendance(id) + " times.\nPercentage of max attendance: " + admin.getPercentAttendance(id) + "%");
-              }
-          } else if (command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")) {
-              admin.writeFile(writePath);
-              JOptionPane.showMessageDialog(null, "Writing file");
-          } else if (command.equalsIgnoreCase("help")) {
-              JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
-          } else {
-              JOptionPane.showMessageDialog(null, "That command does not exist");
-          }
-          command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
-      }
-  }
-
-  static boolean checkPassword(String pass){
-      byte[] passHash;
-      try{
-          MessageDigest md = MessageDigest.getInstance("SHA-256");
-          md.update(pass.getBytes("UTF-8"));
-          passHash = md.digest();
-      }catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-          e.printStackTrace();
-          passHash = null;
-      }
-      if(String.format("%064x", new java.math.BigInteger(1, passHash)).equals("e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a")){
-          return true;
-      }else{
-          return false;
-      }
-  }
-
-  static void start(){
-    String dbPath = databasePath;
-    store = new MemberDatabase(dbPath);
-    while(true){
-      if(!store.active){ // If the database can't connect
-          try {
-              Thread.sleep(2000);
-          }catch(InterruptedException e){
-              System.out.println("Interrupted");
-          }
-          store = new MemberDatabase(dbPath); //Retries
-          JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-          continue;
-      }
-
-      String id = getUserId();  //Gets the name based on the ID from the database
-      if(id == null){ //Id is null if the user presses cancel. Cancel means exit.
-        int option = JOptionPane.showConfirmDialog(null, "Do you really want to quit?", "Do you really want to quit?", JOptionPane.YES_NO_OPTION);
-        if(option == 0){
-          break;
-        }else{
-          continue;
-        }
-      }
-      if(id.equalsIgnoreCase("Admin")){
-          String password = JOptionPane.showInputDialog("What is the password?");
-          if(checkPassword(password)){
-              startAdmin(dbPath);
-          }else{
-              JOptionPane.showMessageDialog(null, "Incorrect password.");
-          }
-      }else {
-          String name = store.queryMemberName(id);
-          if (name.equals("-1")) { //
-              JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-              store = new MemberDatabase(dbPath);
-              continue;
-          } else if (name.length() < 1) { //If the query returns no name this runs
-              //Another loop the check the length, this time of the name
-              name = getUserName();
-              //Name is null if the user presses cancel
-              if (name != null) {
-                  //If the user doesn't press cancel the database is updated with the new name.
-                  store.updateAddMember(name, id);
-              } else {
-                  continue;
-              }
-          }
-
-          if (store.updateAttendance(id)) {
-              //System.out.println("Welcome "+name);  //After all the logic is done the user is welcomed
-              JOptionPane.showMessageDialog(null, "Thanks for coming, " + name + "!");
-          } else {
-              JOptionPane.showMessageDialog(null, "You can only log in once per meeting " + name + "."); //if false is returned then the person already logged in
-          }
-      }
+    public static void main(String [] args){
+        System.out.println("Starting Connection");
+        start();
     }
-    //When the while loop is broken out of all the connections to the database are closed using database.exit();
-    System.out.println("Robots don't quit... \nBut this isn't a Robot!");
-    store.exit();
-  }
+
+    static String getUserId(){
+        String id;
+        int numberCount = 0;
+        int letterCount = 0;
+        int symbolCount = 0;
+        boolean idFailed = false;
+
+        do{ //Checks the length of the Id
+            idFailed = false;
+            id = JOptionPane.showInputDialog("What is your id?");
+            if(id == null){
+                return null;
+            }
+            for(int i = 0; i < id.length(); i++){
+                char currentChar = id.charAt(i);
+                if((currentChar >= 97 && currentChar <= 122) || (currentChar >= 65 && currentChar <= 90)){
+                    letterCount++;
+                }else if(currentChar >= 48 && currentChar <= 57){
+                    numberCount++;
+                }else{
+                    symbolCount++;
+                }
+            }
+            if(id.length() > maxIdLength){
+                idFailed = true;
+                JOptionPane.showMessageDialog(null, "IDs are a maximum of "+maxIdLength+" characters.");
+            }else if(id.length() < minIdLength){
+                idFailed = true;
+                JOptionPane.showMessageDialog(null, "IDs are a minimum of "+minIdLength+" characters.");
+            }
+        }while(idFailed);  //Makes sure that the id is inside the bounds provided above
+        return id.toLowerCase();
+    }
+
+    static String getUserName(){
+        String name;
+        int numberCount = 0;
+        int letterCount = 0;
+        int symbolCount = 0;
+        boolean nameFailed = false;
+        do{
+            nameFailed = false;
+            name = JOptionPane.showInputDialog("What is your name?");
+            if(name == null){
+                return null;
+            }
+            for(int i = 0; i < name.length(); i++){
+                char currentChar = name.charAt(i);
+                if((currentChar >= 97 && currentChar <= 122) || (currentChar >= 65 && currentChar <= 90)){
+                    letterCount++;
+                }else if(currentChar >= 48 && currentChar <= 57){
+                    numberCount++;
+                }else{
+                    symbolCount++;
+                }
+            }
+            if(name.length() > maxNameLength){
+                nameFailed = true;
+                JOptionPane.showMessageDialog(null, "Names are a maximum of "+maxNameLength+" characters.");
+            }else if(name.length() < minNameLength){
+                nameFailed = true;
+                JOptionPane.showMessageDialog(null, "Names are a minimum of "+minNameLength+" characters.");
+            }else if(letterCount < 3){
+                nameFailed = true;
+                JOptionPane.showMessageDialog(null, "Names must have at least 3 letters");
+            }
+        }while(nameFailed);
+        return name;
+    }
+
+    static void startAdmin(String dbPath){
+        AdminCommands admin = new AdminCommands(dbPath);
+        String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");;
+        while(command != null){
+            if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
+                String id = JOptionPane.showInputDialog("What Id");
+                String name = JOptionPane.showInputDialog("What is the new name?");
+                if (!(id == null || name == null)) {
+                    if (!admin.changeName(id, name)) {
+                        JOptionPane.showMessageDialog(null, "Name Change Failed");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Name Changed");
+                    }
+                }
+            } else if (command.equalsIgnoreCase("get attendance") || command.equalsIgnoreCase("ga")) {
+                String id = JOptionPane.showInputDialog("What Id");
+                if (id == null) {
+                } else {
+                    String name = store.queryMemberName(id);
+                    if (name.length() < 1) {
+                        name = id;
+                    }
+                    JOptionPane.showMessageDialog(null, name + " has attended " + admin.getNumAttendance(id) + " times.\nPercentage of max attendance: " + admin.getPercentAttendance(id) + "%");
+                }
+            } else if (command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")) {
+                admin.writeFile(writePath);
+                JOptionPane.showMessageDialog(null, "Writing file");
+            } else if (command.equalsIgnoreCase("help")) {
+                JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
+            } else {
+                JOptionPane.showMessageDialog(null, "That command does not exist");
+            }
+            command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
+        }
+    }
+
+    static boolean checkPassword(String pass){
+        byte[] passHash;
+        try{
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(pass.getBytes("UTF-8"));
+            passHash = md.digest();
+        }catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            passHash = null;
+        }
+        if(String.format("%064x", new java.math.BigInteger(1, passHash)).equals("e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a")){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    static void start(){
+        String dbPath = databasePath;
+        store = new MemberDatabase(dbPath);
+        while(true){
+            if(!store.active){ // If the database can't connect
+                try {
+                    Thread.sleep(2000);
+                }catch(InterruptedException e){
+                    System.out.println("Interrupted");
+                }
+                store = new MemberDatabase(dbPath); //Retries
+                JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
+                continue;
+            }
+
+            String id = getUserId();  //Gets the name based on the ID from the database
+            if(id == null){ //Id is null if the user presses cancel. Cancel means exit.
+                int option = JOptionPane.showConfirmDialog(null, "Do you really want to quit?", "Do you really want to quit?", JOptionPane.YES_NO_OPTION);
+                if(option == 0){
+                    break;
+                }else{
+                    continue;
+                }
+            }
+            if(id.equalsIgnoreCase("Admin")){
+                String password = JOptionPane.showInputDialog("What is the password?");
+                if(checkPassword(password)){
+                    startAdmin(dbPath);
+                }else{
+                    JOptionPane.showMessageDialog(null, "Incorrect password.");
+                }
+            }else {
+                String name = store.queryMemberName(id);
+                if (name.equals("-1")) { //
+                    JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
+                    store = new MemberDatabase(dbPath);
+                    continue;
+                } else if (name.length() < 1) { //If the query returns no name this runs
+                    //Another loop the check the length, this time of the name
+                    name = getUserName();
+                    while (name != null && name.equalsIgnoreCase(id)) { //Checks if id == name
+                        JOptionPane.showMessageDialog(null, "Name cannot equal Id");
+                        name = getUserName();
+                    }
+                    //Name is null if the user presses cancel
+                    if (name != null) {
+                        //If the user doesn't press cancel the database is updated with the new name.
+                        store.updateAddMember(name, id);
+                    } else {
+                        continue;
+                    }
+                }
+
+                if (store.updateAttendance(id)) {
+                    //System.out.println("Welcome "+name);  //After all the logic is done the user is welcomed
+                    JOptionPane.showMessageDialog(null, "Thanks for coming, " + name + "!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "You can only log in once per meeting " + name + "."); //if false is returned then the person already logged in
+                }
+            }
+        }
+        //When the while loop is broken out of all the connections to the database are closed using database.exit();
+        System.out.println("Robots don't quit... \nBut this isn't a Robot!");
+        store.exit();
+    }
 }
