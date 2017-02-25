@@ -1,5 +1,7 @@
 package org.iraiders.idscanner2;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Statement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
@@ -19,16 +21,18 @@ abstract public class Database{
 
     public Database(String url){
     try{
-        File dir = new File("db"); //Creating the db directory if it does not already exist.
-
-        boolean success = dir.mkdir();
+        Path p = Paths.get(url);
+        Path folder = p.getParent();
+        boolean success = folder.toFile().mkdir();
 
         if(success){
             System.out.println("Created db directory");
         }
 
+        String databasePath = "jdbc:sqlite:"+url;
+
         if(conn == null){
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(databasePath);
             System.out.println("New Connection to database open");
         }
 

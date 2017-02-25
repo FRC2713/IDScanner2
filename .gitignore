@@ -31,6 +31,9 @@ hs_err_pid*
 *.ipr
 *.iws
 
+members.db
+attendance.txt
+
 build/
 
 # JRebel
@@ -47,4 +50,3 @@ rebel-remote.xml
 .Trashes
 ehthumbs.db
 Thumbs.db
-members.db

@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
   final private static String databasePath = "./db/members.db";
+  final private static String writePath = "./files/attendance.txt";
 
   final private static int maxNameLength = 20;
   final private static int minNameLength = 3;
@@ -78,11 +79,15 @@ public class Main {
               if(name.length() < 1){
                   name = id;
               }
-              JOptionPane.showMessageDialog(null, name+" has attended "+admin.getNumAttendance(id)+" times.\n"+admin.getPercentAttendance(id)+"%");
+              JOptionPane.showMessageDialog(null, name+" has attended "+admin.getNumAttendance(id)+" times.\nPercentage of max attendance: "+admin.getPercentAttendance(id)+"%");
               startAdmin(dbPath);
           }
+      }else if(command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")){
+          admin.writeFile(writePath);
+          JOptionPane.showMessageDialog(null, "Writing file");
+          startAdmin(dbPath);
       }else if(command.equalsIgnoreCase("help")){
-        JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID");
+        JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
         startAdmin(dbPath);
       }else{
           JOptionPane.showMessageDialog(null, "That command does not exist");
@@ -91,7 +96,7 @@ public class Main {
   }
 
   static void start(){
-    String dbPath = "jdbc:sqlite:"+databasePath;
+    String dbPath = databasePath;
     store = new MemberDatabase(dbPath);
     while(true){
       if(!store.active){ // If the database can't connect
