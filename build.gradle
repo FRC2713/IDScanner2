@@ -1,4 +1,18 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+    }
+}
+
+apply plugin: 'maven'
 apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'org.iraiders.idscanner2.Main'
 
 repositories {
     mavenCentral()
@@ -7,4 +21,16 @@ repositories {
 dependencies {
     //compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.40'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.16.1'
+}
+
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+}
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.iraiders.idscanner2.Main'
+        attributes 'Class-Path': 'sqlite-jdbc-3.16.1.jar'
+    }
 }
