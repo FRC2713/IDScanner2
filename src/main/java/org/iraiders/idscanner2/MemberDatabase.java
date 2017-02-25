@@ -1,19 +1,23 @@
 package org.iraiders.idscanner2;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.SQLException;
-import java.sql.ResultSet;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MemberDatabase extends Database{
-  public MemberDatabase(String serverN, int port, String databaseN, String user, String pass){
-    super(serverN, port, databaseN, user, pass);
+  public MemberDatabase(String url){
+    super(url);
+    String createMember = "CREATE TABLE IF NOT EXISTS members ( memberId varchar(45) NOT NULL PRIMARY KEY UNIQUE, memberName varchar(45) NOT NULL)";
+    String createAttendance = "CREATE TABLE IF NOT EXISTS memberAttendance ( memberId varchar(45) NOT NULL, date varchar(15) NOT NULL, time double NOT NULL PRIMARY KEY UNIQUE)";
+    try{
+      stmt = conn.createStatement();
+      stmt.execute(createMember);
+      stmt.execute(createAttendance);
+    }catch(SQLException e){
+      System.out.println(e.getMessage());
+    }
   }
 
   public boolean updateAttendance(String memberId){
@@ -23,10 +27,10 @@ public class MemberDatabase extends Database{
 
     try{
       stmt = conn.createStatement();
-      res = stmt.executeQuery("SELECT * FROM Members.memberAttendance WHERE memberId = '"+memberId+"'");
+      res = stmt.executeQuery("SELECT * FROM memberAttendance WHERE memberId = '"+memberId+"'");
     }catch(SQLException e){
       try{
-        stmt.executeUpdate("INSERT INTO Members.memberAttendance(memberId, date, time) values ('"+memberId+"', '"+today+"', '"+time+"')");
+        stmt.executeUpdate("INSERT INTO memberAttendance(memberId, date, time) values ('"+memberId+"', '"+today+"', '"+time+"')");
         return true;
       }catch(SQLException ex){
         return false;
@@ -43,7 +47,7 @@ public class MemberDatabase extends Database{
       return false;
     }
     try{
-      stmt.executeUpdate("INSERT INTO Members.memberAttendance(memberId, date, time) values ('"+memberId+"', '"+today+"', '"+time+"')");
+      stmt.executeUpdate("INSERT INTO memberAttendance(memberId, date, time) values ('"+memberId+"', '"+today+"', '"+time+"')");
       return true;
     }catch(SQLException e){
       return false;
@@ -52,16 +56,17 @@ public class MemberDatabase extends Database{
 
   public String queryMemberName(String memberId){
     //return "" == does not exist;
-    String name = "";
-
+    String name;
+    boolean next = true;
     try{
       stmt = conn.createStatement();
-      res = stmt.executeQuery("SELECT * FROM Members.members WHERE memberId='"+memberId+"'");
-      res.next();
+      res = stmt.executeQuery("SELECT * FROM members WHERE memberId='"+memberId+"'");
+      next = res.next();
       name = res.getString("memberName");
     }catch(SQLException e){
       //System.out.println("Line 17: "+e.getErrorCode());
-	  if(e.getErrorCode() == 0){
+	  if(e.getErrorCode() == 0 && next){
+	      //System.out.println("Error: "+e);
 		  return "-1";
 	  }
       return "";
@@ -82,7 +87,7 @@ public class MemberDatabase extends Database{
   public boolean updateAddMember(String name, String id){
     try{
       stmt = conn.createStatement();
-      stmt.executeUpdate("insert into Members.members(memberId, memberName) values ('"+id+"', '"+name+"')");
+      stmt.executeUpdate("insert into members(memberId, memberName) values ('"+id+"', '"+name+"')");
     }catch(SQLException e){
       //System.out.println("Line 31: "+e);
       return false;
