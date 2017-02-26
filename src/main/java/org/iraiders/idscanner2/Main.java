@@ -10,11 +10,13 @@ import java.security.NoSuchAlgorithmException;
 public class Main {
     final private static String databasePath = "./db/members.db";
     final private static String writePath = "./files/attendance.txt";
+    final private static String configPath = "./files/config.ini";
 
-    final private static int maxNameLength = 20;
-    final private static int minNameLength = 3;
-    final private static int maxIdLength = 20;
-    final private static int minIdLength = 3;
+
+    private static int maxNameLength;
+    private static int minNameLength;
+    private static int maxIdLength;
+    private static int minIdLength;
 
     private static MemberDatabase store;
 
@@ -148,6 +150,27 @@ public class Main {
     }
 
     static void start(){
+        IniFileReader config = new IniFileReader(configPath);
+        IniProperty [] configList = config.readFile();
+        for(int i = 0; i < configList.length; i++){
+            String name = configList[i].name;
+
+            System.out.println(name+" equals maxNameLength: "+name.equals("maxNameLength"));
+            if((configList[i].name).equals("maxNameLength")){
+                System.out.println("Setting max name length");
+                maxNameLength = Integer.parseInt(configList[i].value);
+            }
+            if(configList[i].name.equals("minNameLength")){
+                minNameLength = Integer.parseInt(configList[i].value);
+            }
+            if(configList[i].name.equals("maxIdLength")){
+                maxIdLength = Integer.parseInt(configList[i].value);
+            }
+            if(configList[i].name.equals("minIdLength")){
+                minIdLength = Integer.parseInt(configList[i].value);
+            }
+        }
+        System.out.println(maxIdLength);
         String dbPath = databasePath;
         store = new MemberDatabase(dbPath);
         while(true){
