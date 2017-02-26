@@ -15,8 +15,15 @@ public class Main {
 
     private static int maxNameLength;
     private static int minNameLength;
+    private static int minNameNumbers;
+    private static int minNameLetters;
+    private static int minNameSymbols;
+
     private static int maxIdLength;
     private static int minIdLength;
+    private static int minIdNumbers;
+    private static int minIdLetters;
+    private static int minIdSymbols;
 
     private static MemberDatabase store;
 
@@ -28,12 +35,15 @@ public class Main {
 
     static String getUserId(){
         String id;
-        int numberCount = 0;
-        int letterCount = 0;
-        int symbolCount = 0;
-        boolean idFailed = false;
+        int numberCount;
+        int letterCount;
+        int symbolCount;
+        boolean idFailed;
 
         do{ //Checks the length of the Id
+            numberCount = 0;
+            letterCount = 0;
+            symbolCount = 0;
             idFailed = false;
             id = JOptionPane.showInputDialog("What is your id?");
             if(id == null){
@@ -55,6 +65,15 @@ public class Main {
             }else if(id.length() < minIdLength){
                 idFailed = true;
                 JOptionPane.showMessageDialog(null, "IDs are a minimum of "+minIdLength+" characters.");
+            }else if(numberCount < minIdNumbers){
+                idFailed = true;
+                JOptionPane.showMessageDialog(null, "ID's must have at least "+minIdNumbers+" numbers");
+            }else if(letterCount < minIdLetters){
+                idFailed = true;
+                JOptionPane.showMessageDialog(null, "ID's must have at least "+minIdLetters+" letters");
+            }else if(symbolCount < minIdSymbols){
+                idFailed = true;
+                JOptionPane.showMessageDialog(null, "ID's must have at least "+minIdSymbols+" symbols");
             }
         }while(idFailed);  //Makes sure that the id is inside the bounds provided above
         return id.toLowerCase();
@@ -62,11 +81,14 @@ public class Main {
 
     static String getUserName(){
         String name;
-        int numberCount = 0;
-        int letterCount = 0;
-        int symbolCount = 0;
-        boolean nameFailed = false;
+        int numberCount;
+        int letterCount;
+        int symbolCount;
+        boolean nameFailed;
         do{
+            numberCount = 0;
+            letterCount = 0;
+            symbolCount = 0;
             nameFailed = false;
             name = JOptionPane.showInputDialog("What is your name?");
             if(name == null){
@@ -88,9 +110,15 @@ public class Main {
             }else if(name.length() < minNameLength){
                 nameFailed = true;
                 JOptionPane.showMessageDialog(null, "Names are a minimum of "+minNameLength+" characters.");
-            }else if(letterCount < 3){
+            }else if(numberCount < minNameNumbers){
                 nameFailed = true;
-                JOptionPane.showMessageDialog(null, "Names must have at least 3 letters");
+                JOptionPane.showMessageDialog(null, "Names must have at least "+minNameNumbers+" numbers");
+            }else if(letterCount < minNameLetters){
+                nameFailed = true;
+                JOptionPane.showMessageDialog(null, "Names must have at least "+minNameLetters+" letters");
+            }else if(symbolCount < minNameSymbols){
+                nameFailed = true;
+                JOptionPane.showMessageDialog(null, "Names must have at least "+minNameSymbols+" symbols");
             }
         }while(nameFailed);
         return name;
@@ -98,7 +126,7 @@ public class Main {
 
     static void startAdmin(String dbPath){
         AdminCommands admin = new AdminCommands(dbPath);
-        String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");;
+        String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
         while(command != null){
             if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
                 String id = JOptionPane.showInputDialog("What Id");
@@ -112,8 +140,7 @@ public class Main {
                 }
             } else if (command.equalsIgnoreCase("get attendance") || command.equalsIgnoreCase("ga")) {
                 String id = JOptionPane.showInputDialog("What Id");
-                if (id == null) {
-                } else {
+                if (id != null) {
                     String name = store.queryMemberName(id);
                     if (name.length() < 1) {
                         name = id;
@@ -142,35 +169,37 @@ public class Main {
             e.printStackTrace();
             passHash = null;
         }
-        if(String.format("%064x", new java.math.BigInteger(1, passHash)).equals("e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a")){
-            return true;
-        }else{
-            return false;
-        }
+        return String.format("%064x", new java.math.BigInteger(1, passHash)).equals("e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a");
     }
 
     static void start(){
         IniFileReader config = new IniFileReader(configPath);
         IniProperty [] configList = config.readFile();
-        for(int i = 0; i < configList.length; i++){
-            String name = configList[i].name;
-
-            System.out.println(name+" equals maxNameLength: "+name.equals("maxNameLength"));
-            if((configList[i].name).equals("maxNameLength")){
-                System.out.println("Setting max name length");
-                maxNameLength = Integer.parseInt(configList[i].value);
-            }
-            if(configList[i].name.equals("minNameLength")){
-                minNameLength = Integer.parseInt(configList[i].value);
-            }
-            if(configList[i].name.equals("maxIdLength")){
-                maxIdLength = Integer.parseInt(configList[i].value);
-            }
-            if(configList[i].name.equals("minIdLength")){
-                minIdLength = Integer.parseInt(configList[i].value);
+        for(IniProperty i : configList){
+            switch(i.name){
+                case "maxNameLength": maxNameLength = Integer.parseInt(i.value);
+                    break;
+                case "minNameLength": minNameLength = Integer.parseInt(i.value);
+                    break;
+                case "minNameNumbers": minNameNumbers = Integer.parseInt(i.value);
+                    break;
+                case "minNameLetters": minNameLetters = Integer.parseInt(i.value);
+                    break;
+                case "minNameSymbols": minNameSymbols = Integer.parseInt(i.value);
+                    break;
+                case "maxIdLength": maxIdLength = Integer.parseInt(i.value);
+                    break;
+                case "minIdLength": minIdLength = Integer.parseInt(i.value);
+                    break;
+                case "minIdNumbers": minIdNumbers = Integer.parseInt(i.value);
+                    break;
+                case "minIdLetters": minIdLetters = Integer.parseInt(i.value);
+                    break;
+                case "minIdSymbols": minIdSymbols = Integer.parseInt(i.value);
+                    break;
+                default: System.out.println("Unknown config option");
             }
         }
-        System.out.println(maxIdLength);
         String dbPath = databasePath;
         store = new MemberDatabase(dbPath);
         while(true){

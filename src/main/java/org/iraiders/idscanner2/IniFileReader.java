@@ -28,10 +28,16 @@ public class IniFileReader{
                 writer.println("[NameConfig]");
                 writer.println("maxNameLength=20");
                 writer.println("minNameLength=3");
+                writer.println("minNameNumbers=0");
+                writer.println("minNameLetters=3");
+                writer.println("minNameSymbols=0");
                 writer.println();
                 writer.println("[IdConfig]");
                 writer.println("maxIdLength=20");
                 writer.println("minIdLength=3");
+                writer.println("minIdNumbers=0");
+                writer.println("minIdLetters=0");
+                writer.println("minIdSymbols=0");
                 writer.close();
             }
         }catch(IOException e){
@@ -64,8 +70,7 @@ public class IniFileReader{
 
             BufferedReader buffer = new BufferedReader(reader);
             String currentLine;
-            String currentSection;
-            int count = 0;
+            int count;
             int whileCounter = 0;
             StringBuilder section = new StringBuilder().append("None");
             StringBuilder name;
@@ -73,7 +78,6 @@ public class IniFileReader{
 
             do{
                 currentLine = buffer.readLine();
-                //System.out.println(currentLine);
                 if(currentLine != null){
                     if(getCurrentChar(currentLine, 0) == ';'){
 
@@ -85,7 +89,6 @@ public class IniFileReader{
 
                             count++;
                         }
-                        currentSection = section.toString();
                     }else{
                         count = 0;
                         name = new StringBuilder();
@@ -106,10 +109,10 @@ public class IniFileReader{
             }while(currentLine != null);
             return config;
         }catch(FileNotFoundException ex){
-            System.out.println(ex);
+            ex.printStackTrace();
             return null;
         }catch(IOException ex){
-            System.out.println(ex);
+            ex.printStackTrace();
             return null;
         }
     }

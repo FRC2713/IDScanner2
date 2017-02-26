@@ -93,7 +93,7 @@ public class AdminCommands extends Database{
             ResultSet memberRes = memberStmt.executeQuery("SELECT memberId FROM members");
 
             int maxAttendance = 0;
-            int currentAttendance = 0;
+            int currentAttendance;
             while(memberRes.next()){
                 currentAttendance = getNumAttendance(memberRes.getString("memberId"));
                 if(currentAttendance > maxAttendance){

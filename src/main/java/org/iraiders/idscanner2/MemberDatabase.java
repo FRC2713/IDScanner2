@@ -1,7 +1,6 @@
 package org.iraiders.idscanner2;
 
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
