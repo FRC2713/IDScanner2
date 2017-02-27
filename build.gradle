@@ -1,10 +1,26 @@
 apply plugin: 'java'
+apply plugin: 'java-library-distribution'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    //compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.40'
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.16.1'
+}
+
+// Task "distZip" added by plugin "java-library-distribution":
+distZip.shouldRunAfter(build)
+
+jar {
+    // Keep jar clean:
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.MF'
+
+    manifest {
+        attributes 'Main-Class': 'org.iraiders.idscanner2.Main',
+                'Class-Path': configurations.runtime.files.collect { "lib/$it.name" }.join(' ')
+    }
+    // How-to add class path:
+    //     http://stackoverflow.com/questions/22659463/add-classpath-in-manifest-using-gradle
+    //     https://gist.github.com/simon04/6865179
 }

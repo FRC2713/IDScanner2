@@ -31,6 +31,9 @@ hs_err_pid*
 *.ipr
 *.iws
 
+members.db
+attendance.txt
+
 build/
 
 # JRebel
