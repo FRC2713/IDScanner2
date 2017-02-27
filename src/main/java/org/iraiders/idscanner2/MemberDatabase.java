@@ -1,100 +1,117 @@
 package org.iraiders.idscanner2;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.SQLException;
-import java.sql.ResultSet;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MemberDatabase extends Database{
-  public MemberDatabase(String serverN, int port, String databaseN, String user, String pass){
-    super(serverN, port, databaseN, user, pass);
-  }
-
-  public boolean updateAttendance(String memberId){
-    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    String today = dateFormat.format(new Date());
-    double time = System.currentTimeMillis();
-
-    try{
-      stmt = conn.createStatement();
-      res = stmt.executeQuery("SELECT * FROM Members.memberAttendance WHERE memberId = '"+memberId+"'");
-    }catch(SQLException e){
-      try{
-        stmt.executeUpdate("INSERT INTO Members.memberAttendance(memberId, date, time) values ('"+memberId+"', '"+today+"', '"+time+"')");
-        return true;
-      }catch(SQLException ex){
-        return false;
-      }
-    }
-
-    try{
-      while(res.next()){
-        if(res.getString("date").equals(today)){
-          return false;
+    public MemberDatabase(String url){
+        super(url);
+        String createMember = "CREATE TABLE IF NOT EXISTS members ( memberId varchar(45) NOT NULL PRIMARY KEY UNIQUE, memberName varchar(45) NOT NULL)";
+        String createAttendance = "CREATE TABLE IF NOT EXISTS memberAttendance ( memberId varchar(45) NOT NULL, date varchar(15) NOT NULL, time double NOT NULL PRIMARY KEY UNIQUE)";
+        try{
+            stmt = conn.createStatement();
+            stmt.execute(createMember);
+            stmt.execute(createAttendance);
+            stmt.close();
+        }catch(SQLException e){
+            e.printStackTrace();
         }
-      }
-    }catch(SQLException e){
-      return false;
-    }
-    try{
-      stmt.executeUpdate("INSERT INTO Members.memberAttendance(memberId, date, time) values ('"+memberId+"', '"+today+"', '"+time+"')");
-      return true;
-    }catch(SQLException e){
-      return false;
-    }
-  }
-
-  public String queryMemberName(String memberId){
-    //return "" == does not exist;
-    String name = "";
-
-    try{
-      stmt = conn.createStatement();
-      res = stmt.executeQuery("SELECT * FROM Members.members WHERE memberId='"+memberId+"'");
-      res.next();
-      name = res.getString("memberName");
-    }catch(SQLException e){
-      //System.out.println("Line 17: "+e.getErrorCode());
-	  if(e.getErrorCode() == 0){
-		  return "-1";
-	  }
-      return "";
     }
 
+    public boolean updateAttendance(String memberId){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String today = dateFormat.format(new Date());
+        double time = System.currentTimeMillis();
 
-    try{
-      res.close();
-      stmt.close();
-    }catch(SQLException e){
-      //System.out.println("Line XX: "+e);
-    }
-    return name;
-  }
+        try{
+            pstmt = conn.prepareStatement("SELECT * FROM memberAttendance WHERE memberId = ?");
+            pstmt.setString(1, memberId);
+            res = pstmt.executeQuery();
+        }catch(SQLException e){
+            try{
+                pstmt = conn.prepareStatement("INSERT INTO memberAttendance(memberId, date, time) values (?, ?, ?)");
+                pstmt.setString(1, memberId);
+                pstmt.setString(2, today);
+                pstmt.setDouble(3, time);
+                pstmt.executeUpdate();
+                return true;
+            }catch(SQLException ex){
+                return false;
+            }
+        }
 
-//SELECT * FROM Members.members WHERE memberId='600740';
-  //named update because it update data instead of reading it.
-  public boolean updateAddMember(String name, String id){
-    try{
-      stmt = conn.createStatement();
-      stmt.executeUpdate("insert into Members.members(memberId, memberName) values ('"+id+"', '"+name+"')");
-    }catch(SQLException e){
-      //System.out.println("Line 31: "+e);
-      return false;
+        try{
+            while(res.next()){
+                if(res.getString("date").equals(today)){
+                    return false;
+                }
+            }
+        }catch(SQLException e){
+            return false;
+        }
+        try{
+            pstmt = conn.prepareStatement("INSERT INTO memberAttendance(memberId, date, time) values (?, ?, ?)");
+            pstmt.setString(1, memberId);
+            pstmt.setString(2, today);
+            pstmt.setDouble(3, time);
+            pstmt.executeUpdate();
+            return true;
+        }catch(SQLException e){
+            return false;
+        }
     }
 
-    try{
-      stmt.close();
-    }catch(SQLException e){
-      //System.out.println("Line XX: "+e);
+    public String queryMemberName(String memberId){
+        //return "" == does not exist;
+        String name;
+        boolean next = true;
+        try{
+            pstmt = conn.prepareStatement("SELECT * FROM members WHERE memberId=?");
+            pstmt.setString(1, memberId);
+            res = pstmt.executeQuery();
+            next = res.next();
+            name = res.getString("memberName");
+            res.close();
+            pstmt.close();
+        }catch(SQLException e){
+            if(e.getErrorCode() == 0 && next){
+                return "-1";
+            }
+            return "";
+        }
+
+
+        try{
+            res.close();
+            pstmt.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return name;
     }
-    return true;
-  }
+
+    //SELECT * FROM Members.members WHERE memberId='600740';
+    //named update because it update data instead of reading it.
+    public boolean updateAddMember(String name, String id){
+        try{
+            pstmt = conn.prepareStatement("insert into members(memberId, memberName) values (?, ?)");
+            pstmt.setString(1, id);
+            pstmt.setString(2, name);
+            pstmt.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+
+        try{
+            pstmt.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
 
 
 }
