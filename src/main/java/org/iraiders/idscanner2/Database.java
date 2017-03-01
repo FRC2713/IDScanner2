@@ -11,7 +11,6 @@ abstract public class Database{
     PreparedStatement pstmt;
     ResultSet res;
 
-
     public Database(String url){
         try{
             Path p = Paths.get(url);

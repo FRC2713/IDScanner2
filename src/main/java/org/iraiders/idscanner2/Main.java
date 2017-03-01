@@ -1,6 +1,9 @@
 package org.iraiders.idscanner2;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -160,6 +163,7 @@ public class Main {
     }
 
     static boolean checkPassword(String pass){
+        pass += "HUMONEONSDFH"; //This is totally professionally salting it... or something;
         byte[] passHash;
         try{
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -169,7 +173,7 @@ public class Main {
             e.printStackTrace();
             passHash = null;
         }
-        return String.format("%064x", new java.math.BigInteger(1, passHash)).equals("e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a");
+        return String.format("%064x", new java.math.BigInteger(1, passHash)).equals("fc7c008267b305329208efc2ee3ded3fb2844186ff3aa6ae71044f26f4d4a430");
     }
 
     static void start(){
@@ -224,12 +228,24 @@ public class Main {
                 }
             }
             if(id.equalsIgnoreCase("Admin")){
-                String password = JOptionPane.showInputDialog("What is the password?");
-                if(checkPassword(password)){
-                    startAdmin(dbPath);
-                }else{
-                    JOptionPane.showMessageDialog(null, "Incorrect password.");
+                JPanel panel = new JPanel();
+                JLabel label = new JLabel("What is the password?\n");
+                JPasswordField pass = new JPasswordField(10);
+                panel.add(label);
+                panel.add(pass);
+                String[] options = new String[]{"Ok", "Cancel"};
+                int option = JOptionPane.showOptionDialog(null, panel, "The title",
+                        JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                        null, options, options[0]);
+                if(option == 0) {
+                    char[] password = pass.getPassword();
+                    if(checkPassword(new String(password))){
+                        startAdmin(dbPath);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Incorrect password.");
+                    }
                 }
+                char[] password = pass.getPassword();
             }else {
                 String name = store.queryMemberName(id);
                 if (name.equals("-1")) { //
