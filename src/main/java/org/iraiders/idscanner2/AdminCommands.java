@@ -16,7 +16,7 @@ public class AdminCommands extends Database{
         store = new MemberDatabase(serverN, port, databaseN, user, pass);
     }
 
-    public boolean writeFile(String writePath, int maxNameLength, int maxIdLength){
+    public boolean writeFile(String writePath){
         Path p = Paths.get(writePath);
         Path folder = p.getParent();
         boolean dirSuccess = folder.toFile().mkdir();
@@ -44,10 +44,22 @@ public class AdminCommands extends Database{
             }
             res.close();
             String [][] membersAttendance = new String [memberIds.size()][2]; //[i][0] hold num and [i][1] holds percentage
+            int maxNameLength = 0;
+            int maxIdLength = 0;
+            String memberName;
             for(int i = 0; i < memberIds.size(); i++){
+                memberName = store.queryMemberName(memberIds.get(i));
+                if(memberName.length() > maxNameLength){
+                    maxNameLength =  memberName.length();
+                }
+                if(memberIds.get(i).length() > maxIdLength){
+                    maxIdLength = memberIds.get(i).length();
+                }
                 membersAttendance[i][0] = Integer.toString(getNumAttendance(memberIds.get(i)));
                 membersAttendance[i][1] = Integer.toString(getPercentAttendance(memberIds.get(i)));
             }
+            maxNameLength++; //The file looks better this way.
+            maxIdLength++;
             stmt.close();
 
             try{
@@ -61,7 +73,7 @@ public class AdminCommands extends Database{
                     idString = String.format("| Id: %-"+maxIdLength+"."+maxIdLength+"s", memberIds.get(i));
                     attendanceString = String.format("| Meetings Attended: %3.3s", membersAttendance[i][0]);
                     percentageString = String.format("| Percentage Attended: %4.4s", membersAttendance[i][1]+"%");
-                    writer.println(nameString+idString+attendanceString+percentageString);
+                    writer.println(nameString+idString+attendanceString+percentageString+"\n");
                 }
                 writer.close();
                 return true;
