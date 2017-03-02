@@ -11,9 +11,14 @@ import java.security.NoSuchAlgorithmException;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
-    final private static String databasePath = "./db/members.db";
     final private static String writePath = "./files/attendance.txt";
     final private static String configPath = "./files/config.ini";
+
+    final static String serverName = "localhost";
+    final static int port = 8889;
+    final static String databaseName = "Members";
+    final static String user = "root";
+    final static String dbPassword = "root";
 
 
     private static int maxNameLength;
@@ -127,8 +132,8 @@ public class Main {
         return name;
     }
 
-    static void startAdmin(String dbPath){
-        AdminCommands admin = new AdminCommands(dbPath);
+    static void startAdmin(String serverN, int port, String databaseN, String user, String pass){
+        AdminCommands admin = new AdminCommands(serverName, port, databaseName, user, dbPassword);
         String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
         while(command != null){
             if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
@@ -151,7 +156,7 @@ public class Main {
                     JOptionPane.showMessageDialog(null, name + " has attended " + admin.getNumAttendance(id) + " times.\nPercentage of max attendance: " + admin.getPercentAttendance(id) + "%");
                 }
             } else if (command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")) {
-                admin.writeFile(writePath);
+                admin.writeFile(writePath, maxNameLength);
                 JOptionPane.showMessageDialog(null, "Writing file");
             } else if (command.equalsIgnoreCase("help")) {
                 JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
@@ -204,8 +209,7 @@ public class Main {
                 default: System.out.println("Unknown config option");
             }
         }
-        String dbPath = databasePath;
-        store = new MemberDatabase(dbPath);
+        store = new MemberDatabase(serverName, port, databaseName, user, dbPassword);
         while(true){
             if(!store.active){ // If the database can't connect
                 try {
@@ -213,9 +217,13 @@ public class Main {
                 }catch(InterruptedException e){
                     System.out.println("Interrupted");
                 }
-                store = new MemberDatabase(dbPath); //Retries
-                JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-                continue;
+                store = new MemberDatabase(serverName, port, databaseName, user, dbPassword); //Retries
+                int option = JOptionPane.showConfirmDialog(null, "Database connection inactive. Press Ok to retry or Cancel to quit.\n(If the problem persists tell a software team member)", "No Connection", JOptionPane.OK_CANCEL_OPTION);
+                if(option == 1){
+                    System.exit(0);
+                }else{
+                    continue;
+                }
             }
 
             String id = getUserId();  //Gets the name based on the ID from the database
@@ -240,7 +248,7 @@ public class Main {
                 if(option == 0) {
                     char[] password = pass.getPassword();
                     if(checkPassword(new String(password))){
-                        startAdmin(dbPath);
+                        startAdmin(serverName, port, databaseName, user, dbPassword);
                     }else{
                         JOptionPane.showMessageDialog(null, "Incorrect password.");
                     }
@@ -249,7 +257,7 @@ public class Main {
                 String name = store.queryMemberName(id);
                 if (name.equals("-1")) { //
                     JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-                    store = new MemberDatabase(dbPath);
+                    store = new MemberDatabase(serverName, port, databaseName, user, dbPassword);
                     continue;
                 } else if (name.length() < 1) { //If the query returns no name this runs
                     //Another loop the check the length, this time of the name

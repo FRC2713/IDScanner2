@@ -20,8 +20,8 @@ repositories {
 
 dependencies {
     shadow 'junit:junit:3.8.2'
-    //compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.40'
-    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.16.1'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.40'
+    //compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.16.1'
     shadow 'org.xerial:sqlite-jdbc:jar:3.16.1'
 }
 

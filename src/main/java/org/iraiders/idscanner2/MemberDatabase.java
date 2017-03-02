@@ -6,17 +6,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MemberDatabase extends Database{
-    public MemberDatabase(String url){
-        super(url);
-        String createMember = "CREATE TABLE IF NOT EXISTS members ( memberId varchar(45) NOT NULL PRIMARY KEY UNIQUE, memberName varchar(45) NOT NULL)";
-        String createAttendance = "CREATE TABLE IF NOT EXISTS memberAttendance ( memberId varchar(45) NOT NULL, date varchar(15) NOT NULL, time double NOT NULL PRIMARY KEY UNIQUE)";
-        try{
-            stmt = conn.createStatement();
-            stmt.execute(createMember);
-            stmt.execute(createAttendance);
-            stmt.close();
-        }catch(SQLException e){
-            e.printStackTrace();
+    public MemberDatabase(String serverN, int port, String databaseN, String user, String pass){
+        super(serverN, port, databaseN, user, pass);
+        if(conn != null) {
+            String createMember = "CREATE TABLE IF NOT EXISTS members ( memberId varchar(45) NOT NULL PRIMARY KEY UNIQUE, memberName varchar(45) NOT NULL)";
+            String createAttendance = "CREATE TABLE IF NOT EXISTS memberAttendance ( memberId varchar(45) NOT NULL, date varchar(15) NOT NULL, time double NOT NULL PRIMARY KEY UNIQUE)";
+            try {
+                stmt = conn.createStatement();
+                stmt.execute(createMember);
+                stmt.execute(createAttendance);
+                stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

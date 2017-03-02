@@ -11,12 +11,12 @@ public class AdminCommands extends Database{
     private ResultSet res;
     private MemberDatabase store;
 
-    public AdminCommands(String dbPath){
-        super(dbPath);
-        store = new MemberDatabase(dbPath);
+    public AdminCommands(String serverN, int port, String databaseN, String user, String pass){
+        super(serverN, port, databaseN, user, pass);
+        store = new MemberDatabase(serverN, port, databaseN, user, pass);
     }
 
-    public boolean writeFile(String writePath){
+    public boolean writeFile(String writePath, int maxNameLength){
         Path p = Paths.get(writePath);
         Path folder = p.getParent();
         boolean dirSuccess = folder.toFile().mkdir();
@@ -51,9 +51,15 @@ public class AdminCommands extends Database{
             stmt.close();
 
             try{
+                String nameString;
+                String attendanceString;
+                String percentageString;
                 PrintWriter writer = new PrintWriter(writePath, "UTF-8");
                 for(int i = 0; i < memberIds.size(); i++){
-                    writer.println("Name: "+store.queryMemberName(memberIds.get(i))+", Meetings attended: "+membersAttendance[i][0]+", Percentage attended: "+membersAttendance[i][1]+"%");
+                    nameString = String.format("Name: %-20.20s", store.queryMemberName(memberIds.get(i)));
+                    attendanceString = String.format("| Meetings Attended: %3.3s", membersAttendance[i][0]);
+                    percentageString = String.format("| Percentage Attended: %4.4s", membersAttendance[i][1]+"%");
+                    writer.println(nameString+attendanceString+percentageString);
                 }
                 writer.close();
                 return true;
