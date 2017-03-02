@@ -229,7 +229,7 @@ public class Main {
             }
             if(id.equalsIgnoreCase("Admin")){
                 JPanel panel = new JPanel();
-                JLabel label = new JLabel("What is the password?\n");
+                JLabel label = new JLabel("What is the password?");
                 JPasswordField pass = new JPasswordField(10);
                 panel.add(label);
                 panel.add(pass);
@@ -245,7 +245,6 @@ public class Main {
                         JOptionPane.showMessageDialog(null, "Incorrect password.");
                     }
                 }
-                char[] password = pass.getPassword();
             }else {
                 String name = store.queryMemberName(id);
                 if (name.equals("-1")) { //
