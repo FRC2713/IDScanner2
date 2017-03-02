@@ -52,14 +52,16 @@ public class AdminCommands extends Database{
 
             try{
                 String nameString;
+                String idString;
                 String attendanceString;
                 String percentageString;
                 PrintWriter writer = new PrintWriter(writePath, "UTF-8");
                 for(int i = 0; i < memberIds.size(); i++){
                     nameString = String.format("Name: %-20.20s", store.queryMemberName(memberIds.get(i)));
+                    idString = String.format("| Id: %-20.20s", memberIds.get(i));
                     attendanceString = String.format("| Meetings Attended: %3.3s", membersAttendance[i][0]);
                     percentageString = String.format("| Percentage Attended: %4.4s", membersAttendance[i][1]+"%");
-                    writer.println(nameString+attendanceString+percentageString);
+                    writer.println(nameString+idString+attendanceString+percentageString);
                 }
                 writer.close();
                 return true;
