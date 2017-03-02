@@ -156,7 +156,7 @@ public class Main {
                     JOptionPane.showMessageDialog(null, name + " has attended " + admin.getNumAttendance(id) + " times.\nPercentage of max attendance: " + admin.getPercentAttendance(id) + "%");
                 }
             } else if (command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")) {
-                admin.writeFile(writePath, maxNameLength);
+                admin.writeFile(writePath, maxNameLength, maxIdLength);
                 JOptionPane.showMessageDialog(null, "Writing file");
             } else if (command.equalsIgnoreCase("help")) {
                 JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
