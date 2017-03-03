@@ -6,8 +6,10 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Member;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.PreparedStatement;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
@@ -167,18 +169,14 @@ public class Main {
         }
     }
 
-    static boolean checkPassword(String pass){
-        pass += "HUMONEONSDFH"; //This is totally professionally salting it... or something;
-        byte[] passHash;
-        try{
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(pass.getBytes("UTF-8"));
-            passHash = md.digest();
-        }catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-            passHash = null;
+    static boolean checkPassword(String pass, String memberId){
+        MemberDatabase passwordDatabase = new MemberDatabase(serverName, port, databaseName, user, dbPassword);
+        String passHash = Password.hashPassword(pass, memberId);
+        String userPass = passwordDatabase.getPassword(memberId);
+        if(userPass.length() < 1){
+            return true;
         }
-        return String.format("%064x", new java.math.BigInteger(1, passHash)).equals("fc7c008267b305329208efc2ee3ded3fb2844186ff3aa6ae71044f26f4d4a430");
+        return userPass.equals(passHash);
     }
 
     static void start(){
@@ -226,7 +224,8 @@ public class Main {
                 }
             }
 
-            String id = getUserId();  //Gets the name based on the ID from the database
+            String id = getUserId().toLowerCase();  //Gets the name based on the ID from the database
+            String status = store.getStatus(id);
             if(id == null){ //Id is null if the user presses cancel. Cancel means exit.
                 int option = JOptionPane.showConfirmDialog(null, "Do you really want to quit?", "Do you really want to quit?", JOptionPane.YES_NO_OPTION);
                 if(option == 0){
@@ -235,9 +234,9 @@ public class Main {
                     continue;
                 }
             }
-            if(id.equalsIgnoreCase("Admin")){
+            if(status.equals("admin")){
                 JPanel panel = new JPanel();
-                JLabel label = new JLabel("What is the password?");
+                JLabel label = new JLabel("What is your password?");
                 JPasswordField pass = new JPasswordField(10);
                 panel.add(label);
                 panel.add(pass);
@@ -247,7 +246,7 @@ public class Main {
                         null, options, options[0]);
                 if(option == 0) {
                     char[] password = pass.getPassword();
-                    if(checkPassword(new String(password))){
+                    if(checkPassword(new String(password), id)){
                         startAdmin(serverName, port, databaseName, user, dbPassword);
                     }else{
                         JOptionPane.showMessageDialog(null, "Incorrect password.");

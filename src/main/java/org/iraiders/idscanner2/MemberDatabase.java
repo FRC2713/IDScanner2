@@ -1,24 +1,67 @@
 package org.iraiders.idscanner2;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
+
 public class MemberDatabase extends Database{
     public MemberDatabase(String serverN, int port, String databaseN, String user, String pass){
         super(serverN, port, databaseN, user, pass);
         if(conn != null) {
-            String createMember = "CREATE TABLE IF NOT EXISTS members ( memberId varchar(45) NOT NULL PRIMARY KEY UNIQUE, memberName varchar(45) NOT NULL)";
+            String createMember = "CREATE TABLE IF NOT EXISTS members ( memberId varchar(45) NOT NULL PRIMARY KEY UNIQUE, memberName varchar(45) NOT NULL, memberStatus varchar(10) NOT NULL DEFAULT 'member', password varchar(64) DEFAULT NULL)";
             String createAttendance = "CREATE TABLE IF NOT EXISTS memberAttendance ( memberId varchar(45) NOT NULL, date varchar(15) NOT NULL, time double NOT NULL PRIMARY KEY UNIQUE)";
             try {
                 stmt = conn.createStatement();
-                stmt.execute(createMember);
+                DatabaseMetaData meta = conn.getMetaData();
+                ResultSet res = meta.getTables(null, null, "members", new String[] {"TABLE"});
+                if(!res.next()){
+                    stmt.executeUpdate(createMember);
+                    String password = JOptionPane.showInputDialog("Please input a default admin password.");
+                    String hash = Password.hashPassword(password, "admin");
+                    stmt.executeUpdate("INSERT INTO members (memberId, memberName, memberStatus, password) VALUES ('admin', 'Admin', 'admin', '"+hash+"');");
+                }
                 stmt.execute(createAttendance);
                 stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public String getPassword(String memberId){
+        try {
+            pstmt = conn.prepareStatement("SELECT password FROM members WHERE memberId=?");
+            pstmt.setString(1, memberId);
+            res = pstmt.executeQuery();
+            if(res.next()){
+                return res.getString("password");
+            }else{
+                return "";
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public String getStatus(String memberId){
+        try {
+            pstmt = conn.prepareStatement("SELECT memberStatus FROM members where memberId=?");
+            pstmt.setString(1, memberId);
+            res = pstmt.executeQuery();
+            if(res.next()){
+                return res.getString("memberStatus");
+            }else{
+                return "";
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return "";
         }
     }
 

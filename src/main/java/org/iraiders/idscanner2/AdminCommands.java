@@ -16,6 +16,11 @@ public class AdminCommands extends Database{
         store = new MemberDatabase(serverN, port, databaseN, user, pass);
     }
 
+    public boolean addAdmin(String adminId){
+
+        return true;
+    }
+
     public boolean writeFile(String writePath){
         Path p = Paths.get(writePath);
         Path folder = p.getParent();
