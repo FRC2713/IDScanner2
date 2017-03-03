@@ -57,11 +57,11 @@ public class MemberDatabase extends Database{
             if(res.next()){
                 return res.getString("memberStatus");
             }else{
-                return "";
+                return "unknown";
             }
         }catch(SQLException e){
             e.printStackTrace();
-            return "";
+            return "unknown";
         }
     }
 
@@ -139,6 +139,27 @@ public class MemberDatabase extends Database{
 
     //SELECT * FROM Members.members WHERE memberId='600740';
     //named update because it update data instead of reading it.
+    public boolean updateAddMember(String name, String id, String pass){
+        String hashPass = Password.hashPassword(pass, id);
+        try{
+            pstmt = conn.prepareStatement("insert into members(memberId, memberName, password) values (?, ?, ?)");
+            pstmt.setString(1, id);
+            pstmt.setString(2, name);
+            pstmt.setString(3, hashPass);
+            pstmt.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+
+        try{
+            pstmt.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     public boolean updateAddMember(String name, String id){
         try{
             pstmt = conn.prepareStatement("insert into members(memberId, memberName) values (?, ?)");
@@ -157,6 +178,4 @@ public class MemberDatabase extends Database{
         }
         return true;
     }
-
-
 }

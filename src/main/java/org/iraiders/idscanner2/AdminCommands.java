@@ -16,9 +16,26 @@ public class AdminCommands extends Database{
         store = new MemberDatabase(serverN, port, databaseN, user, pass);
     }
 
-    public boolean addAdmin(String adminId){
-
-        return true;
+    public boolean addAdmin(String adminId, String password){
+        String hashPass = Password.hashPassword(password, adminId);
+        try {
+            pstmt = conn.prepareStatement("SELECT memberId FROM members WHERE memberId=?");
+            pstmt.setString(1, adminId);
+            res = pstmt.executeQuery();
+            if(!res.next()){
+                return false;
+            }else {
+                System.out.println("Setting password to: "+hashPass);
+                pstmt = conn.prepareStatement("UPDATE members SET memberStatus='admin', password=? WHERE memberId=?");
+                pstmt.setString(1, hashPass);
+                pstmt.setString(2, adminId);
+                pstmt.execute();
+                return true;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean writeFile(String writePath){
@@ -70,15 +87,17 @@ public class AdminCommands extends Database{
             try{
                 String nameString;
                 String idString;
+                String statusString;
                 String attendanceString;
                 String percentageString;
                 PrintWriter writer = new PrintWriter(writePath, "UTF-8");
                 for(int i = 0; i < memberIds.size(); i++){
                     nameString = String.format("Name: %-"+maxNameLength+"."+maxNameLength+"s", store.queryMemberName(memberIds.get(i)));
                     idString = String.format("| Id: %-"+maxIdLength+"."+maxIdLength+"s", memberIds.get(i));
+                    statusString = String.format("| Status: %-7.6s", store.getStatus(memberIds.get(i)));
                     attendanceString = String.format("| Meetings Attended: %3.3s", membersAttendance[i][0]);
                     percentageString = String.format("| Percentage Attended: %4.4s", membersAttendance[i][1]+"%");
-                    writer.println(nameString+idString+attendanceString+percentageString+"\n");
+                    writer.println(nameString+idString+statusString+attendanceString+percentageString+"\n");
                 }
                 writer.close();
                 return true;

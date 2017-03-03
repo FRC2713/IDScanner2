@@ -134,7 +134,7 @@ public class Main {
         return name;
     }
 
-    static void startAdmin(String serverN, int port, String databaseN, String user, String pass){
+    static void startAdmin(){
         AdminCommands admin = new AdminCommands(serverName, port, databaseName, user, dbPassword);
         String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
         while(command != null){
@@ -160,8 +160,32 @@ public class Main {
             } else if (command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")) {
                 admin.writeFile(writePath);
                 JOptionPane.showMessageDialog(null, "Writing file");
+            }else if (command.equalsIgnoreCase("add admin") || command.equalsIgnoreCase("aa")) {
+                String id = JOptionPane.showInputDialog("Which Id should be granted admin?");
+                if(id == null){
+                    continue;
+                }else{
+                    id = id.toLowerCase();
+                }
+                int adminConfirm = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm", JOptionPane.YES_NO_OPTION);
+                if(adminConfirm == 0){
+                    String password = JOptionPane.showInputDialog("What should the password be?");
+                    if(password == null){
+                        JOptionPane.showMessageDialog(null, "Cancelling Create Admin");
+                        continue;
+                    }else{
+                        boolean adminSuccess = admin.addAdmin(id, password);
+                        if(adminSuccess){
+                            JOptionPane.showMessageDialog(null, "Admin created");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Admin Creation failed. Check the id.");
+                        }
+                    }
+                }else{
+                    continue;
+                }
             } else if (command.equalsIgnoreCase("help")) {
-                JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file");
+                JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file\nAdd Admin (AA): Create a new admin");
             } else {
                 JOptionPane.showMessageDialog(null, "That command does not exist");
             }
@@ -224,8 +248,8 @@ public class Main {
                 }
             }
 
-            String id = getUserId().toLowerCase();  //Gets the name based on the ID from the database
-            String status = store.getStatus(id);
+            String id = getUserId();  //Gets the name based on the ID from the database
+            String status = "member";
             if(id == null){ //Id is null if the user presses cancel. Cancel means exit.
                 int option = JOptionPane.showConfirmDialog(null, "Do you really want to quit?", "Do you really want to quit?", JOptionPane.YES_NO_OPTION);
                 if(option == 0){
@@ -233,8 +257,13 @@ public class Main {
                 }else{
                     continue;
                 }
+            }else{
+                id = id.toLowerCase();
+                status = store.getStatus(id);
             }
+
             if(status.equals("admin")){
+                store.updateAttendance(id);
                 JPanel panel = new JPanel();
                 JLabel label = new JLabel("What is your password?");
                 JPasswordField pass = new JPasswordField(10);
@@ -247,13 +276,14 @@ public class Main {
                 if(option == 0) {
                     char[] password = pass.getPassword();
                     if(checkPassword(new String(password), id)){
-                        startAdmin(serverName, port, databaseName, user, dbPassword);
+                        startAdmin();
                     }else{
                         JOptionPane.showMessageDialog(null, "Incorrect password.");
                     }
                 }
             }else {
                 String name = store.queryMemberName(id);
+                //String pass = store.getPassword(id);
                 if (name.equals("-1")) { //
                     JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
                     store = new MemberDatabase(serverName, port, databaseName, user, dbPassword);
@@ -265,20 +295,46 @@ public class Main {
                         JOptionPane.showMessageDialog(null, "Name cannot equal Id");
                         name = getUserName();
                     }
-                    //Name is null if the user presses cancel
-                    if (name != null) {
+
+                    String pass = JOptionPane.showInputDialog("Enter a password or press cancel to have none");
+                    if (name != null) { //Name is null if the user presses cancel
                         //If the user doesn't press cancel the database is updated with the new name.
-                        store.updateAddMember(name, id);
+                        if(pass == null || pass.length()<1) {
+                            store.updateAddMember(name, id);
+                        }else{
+                            store.updateAddMember(name, id, pass);
+                        }
                     } else {
                         continue;
                     }
                 }
 
-                if (store.updateAttendance(id)) {
-                    //System.out.println("Welcome "+name);  //After all the logic is done the user is welcomed
-                    JOptionPane.showMessageDialog(null, "Thanks for coming, " + name + "!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "You can only log in once per meeting " + name + "."); //if false is returned then the person already logged in
+                String userPassword = store.getPassword(id);
+                if(userPassword != null){
+                    String pass = JOptionPane.showInputDialog("What is your password?");
+                    while(true) {
+                        if(pass == null){
+                            break;
+                        }
+                        if (Password.hashPassword(pass, id).equals(userPassword)) {
+                            if (store.updateAttendance(id)) {
+                                //System.out.println("Welcome "+name);  //After all the logic is done the user is welcomed
+                                JOptionPane.showMessageDialog(null, "Thanks for coming, " + name + "!");
+                                break;
+                            } else {
+                                JOptionPane.showMessageDialog(null, "You can only log in once per meeting " + name + "."); //if false is returned then the person already logged in
+                                break;
+                            }
+                        }else{
+                            int incorPassChoice = JOptionPane.showConfirmDialog(null, "Incorrect password.\nWould you like to try again?", "Do you really want to quit?", JOptionPane.YES_NO_OPTION);
+                            if(incorPassChoice == 0){
+                                pass = JOptionPane.showInputDialog("What is your password?");
+                                continue;
+                            }else{
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
