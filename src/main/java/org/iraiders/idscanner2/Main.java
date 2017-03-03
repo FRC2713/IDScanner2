@@ -214,8 +214,12 @@ public class Main {
                     System.out.println("Interrupted");
                 }
                 store = new MemberDatabase(dbPath); //Retries
-                JOptionPane.showMessageDialog(null, "Database connection inactive, retrying");
-                continue;
+                int option = JOptionPane.showConfirmDialog(null, "Database connection inactive. Press Ok to retry or Cancel to quit.\n(If the problem persists tell a software team member)", "No Connection", JOptionPane.OK_CANCEL_OPTION);
+                if(option == 1){
+                    System.exit(0);
+                }else{
+                    continue;
+                }
             }
 
             String id = getUserId();  //Gets the name based on the ID from the database
@@ -229,7 +233,7 @@ public class Main {
             }
             if(id.equalsIgnoreCase("Admin")){
                 JPanel panel = new JPanel();
-                JLabel label = new JLabel("What is the password?\n");
+                JLabel label = new JLabel("What is the password?");
                 JPasswordField pass = new JPasswordField(10);
                 panel.add(label);
                 panel.add(pass);
