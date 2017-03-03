@@ -38,6 +38,13 @@ public class IniFileReader{
                 writer.println("minIdNumbers=0");
                 writer.println("minIdLetters=0");
                 writer.println("minIdSymbols=0");
+                writer.println();
+                writer.println("[DatabaseConfig]");
+                writer.println("serverIp=localhost");
+                writer.println("port=3306");
+                writer.println("databaseName=Members");
+                writer.println("user=root");
+                writer.println("password=root");
                 writer.close();
             }
         }catch(IOException e){

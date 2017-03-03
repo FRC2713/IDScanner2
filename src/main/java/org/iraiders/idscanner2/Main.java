@@ -5,22 +5,16 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Member;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.PreparedStatement;
-
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
     final private static String writePath = "./files/attendance.txt";
     final private static String configPath = "./files/config.ini";
 
-    final static String serverName = "localhost";
-    final static int port = 8889;
-    final static String databaseName = "Members";
-    final static String user = "root";
-    final static String dbPassword = "root";
+    private static String serverName;
+    private static int port;
+    private static String databaseName;
+    private static String user;
+    private static String dbPassword;
 
 
     private static int maxNameLength;
@@ -203,7 +197,7 @@ public class Main {
         return userPass.equals(passHash);
     }
 
-    static void start(){
+    static boolean setConfig(){
         IniFileReader config = new IniFileReader(configPath);
         IniProperty [] configList = config.readFile();
         for(IniProperty i : configList){
@@ -228,11 +222,27 @@ public class Main {
                     break;
                 case "minIdSymbols": minIdSymbols = Integer.parseInt(i.value);
                     break;
+                case "serverIp": serverName = i.value;
+                    break;
+                case "port": port = Integer.parseInt(i.value);
+                    break;
+                case "databaseName": databaseName = i.value;
+                    break;
+                case "user": user = i.value;
+                    break;
+                case "password": dbPassword = i.value;
+                    break;
                 default: System.out.println("Unknown config option");
             }
         }
+        return true;
+    }
+
+    static void start(){
+        setConfig();
         store = new MemberDatabase(serverName, port, databaseName, user, dbPassword);
         while(true){
+            setConfig();
             if(!store.active){ // If the database can't connect
                 try {
                     Thread.sleep(2000);
@@ -240,7 +250,7 @@ public class Main {
                     System.out.println("Interrupted");
                 }
                 store = new MemberDatabase(serverName, port, databaseName, user, dbPassword); //Retries
-                int option = JOptionPane.showConfirmDialog(null, "Database connection inactive. Press Ok to retry or Cancel to quit.\n(If the problem persists tell a software team member)", "No Connection", JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(null, "Database connection inactive. Press Ok to retry or Cancel to quit.\n(If the problem persists tell a software team member, if you are a software team member then check the config.ini)", "No Connection", JOptionPane.OK_CANCEL_OPTION);
                 if(option == 1){
                     System.exit(0);
                 }else{
