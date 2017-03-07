@@ -1,9 +1,6 @@
 package org.iraiders.idscanner2;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
+import javax.swing.*;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
@@ -32,106 +29,106 @@ public class Main {
     private static MemberDatabase store;
 
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         System.out.println("Starting Connection");
         start();
     }
 
-    static String getUserId(){
+    static String getUserId() {
         String id;
         int numberCount;
         int letterCount;
         int symbolCount;
         boolean idFailed;
 
-        do{ //Checks the length of the Id
+        do { //Checks the length of the Id
             numberCount = 0;
             letterCount = 0;
             symbolCount = 0;
             idFailed = false;
             id = JOptionPane.showInputDialog("What is your id?");
-            if(id == null){
+            if (id == null) {
                 return null;
             }
-            for(int i = 0; i < id.length(); i++){
+            for (int i = 0; i < id.length(); i++) {
                 char currentChar = id.charAt(i);
-                if((currentChar >= 97 && currentChar <= 122) || (currentChar >= 65 && currentChar <= 90)){
+                if ((currentChar >= 97 && currentChar <= 122) || (currentChar >= 65 && currentChar <= 90)) {
                     letterCount++;
-                }else if(currentChar >= 48 && currentChar <= 57){
+                } else if (currentChar >= 48 && currentChar <= 57) {
                     numberCount++;
-                }else{
+                } else {
                     symbolCount++;
                 }
             }
-            if(id.length() > maxIdLength){
+            if (id.length() > maxIdLength) {
                 idFailed = true;
-                JOptionPane.showMessageDialog(null, "IDs are a maximum of "+maxIdLength+" characters.");
-            }else if(id.length() < minIdLength){
+                JOptionPane.showMessageDialog(null, "IDs are a maximum of " + maxIdLength + " characters.");
+            } else if (id.length() < minIdLength) {
                 idFailed = true;
-                JOptionPane.showMessageDialog(null, "IDs are a minimum of "+minIdLength+" characters.");
-            }else if(numberCount < minIdNumbers){
+                JOptionPane.showMessageDialog(null, "IDs are a minimum of " + minIdLength + " characters.");
+            } else if (numberCount < minIdNumbers) {
                 idFailed = true;
-                JOptionPane.showMessageDialog(null, "ID's must have at least "+minIdNumbers+" numbers");
-            }else if(letterCount < minIdLetters){
+                JOptionPane.showMessageDialog(null, "ID's must have at least " + minIdNumbers + " numbers");
+            } else if (letterCount < minIdLetters) {
                 idFailed = true;
-                JOptionPane.showMessageDialog(null, "ID's must have at least "+minIdLetters+" letters");
-            }else if(symbolCount < minIdSymbols){
+                JOptionPane.showMessageDialog(null, "ID's must have at least " + minIdLetters + " letters");
+            } else if (symbolCount < minIdSymbols) {
                 idFailed = true;
-                JOptionPane.showMessageDialog(null, "ID's must have at least "+minIdSymbols+" symbols");
+                JOptionPane.showMessageDialog(null, "ID's must have at least " + minIdSymbols + " symbols");
             }
-        }while(idFailed);  //Makes sure that the id is inside the bounds provided above
+        } while (idFailed);  //Makes sure that the id is inside the bounds provided above
         return id.toLowerCase();
     }
 
-    static String getUserName(){
+    static String getUserName() {
         String name;
         int numberCount;
         int letterCount;
         int symbolCount;
         boolean nameFailed;
-        do{
+        do {
             numberCount = 0;
             letterCount = 0;
             symbolCount = 0;
             nameFailed = false;
             name = JOptionPane.showInputDialog("What is your name?");
-            if(name == null){
+            if (name == null) {
                 return null;
             }
-            for(int i = 0; i < name.length(); i++){
+            for (int i = 0; i < name.length(); i++) {
                 char currentChar = name.charAt(i);
-                if((currentChar >= 97 && currentChar <= 122) || (currentChar >= 65 && currentChar <= 90)){
+                if ((currentChar >= 97 && currentChar <= 122) || (currentChar >= 65 && currentChar <= 90)) {
                     letterCount++;
-                }else if(currentChar >= 48 && currentChar <= 57){
+                } else if (currentChar >= 48 && currentChar <= 57) {
                     numberCount++;
-                }else{
+                } else {
                     symbolCount++;
                 }
             }
-            if(name.length() > maxNameLength){
+            if (name.length() > maxNameLength) {
                 nameFailed = true;
-                JOptionPane.showMessageDialog(null, "Names are a maximum of "+maxNameLength+" characters.");
-            }else if(name.length() < minNameLength){
+                JOptionPane.showMessageDialog(null, "Names are a maximum of " + maxNameLength + " characters.");
+            } else if (name.length() < minNameLength) {
                 nameFailed = true;
-                JOptionPane.showMessageDialog(null, "Names are a minimum of "+minNameLength+" characters.");
-            }else if(numberCount < minNameNumbers){
+                JOptionPane.showMessageDialog(null, "Names are a minimum of " + minNameLength + " characters.");
+            } else if (numberCount < minNameNumbers) {
                 nameFailed = true;
-                JOptionPane.showMessageDialog(null, "Names must have at least "+minNameNumbers+" numbers");
-            }else if(letterCount < minNameLetters){
+                JOptionPane.showMessageDialog(null, "Names must have at least " + minNameNumbers + " numbers");
+            } else if (letterCount < minNameLetters) {
                 nameFailed = true;
-                JOptionPane.showMessageDialog(null, "Names must have at least "+minNameLetters+" letters");
-            }else if(symbolCount < minNameSymbols){
+                JOptionPane.showMessageDialog(null, "Names must have at least " + minNameLetters + " letters");
+            } else if (symbolCount < minNameSymbols) {
                 nameFailed = true;
-                JOptionPane.showMessageDialog(null, "Names must have at least "+minNameSymbols+" symbols");
+                JOptionPane.showMessageDialog(null, "Names must have at least " + minNameSymbols + " symbols");
             }
-        }while(nameFailed);
+        } while (nameFailed);
         return name;
     }
 
-    static void startAdmin(){
+    static void startAdmin() {
         AdminCommands admin = new AdminCommands(serverName, port, databaseName, user, dbPassword);
         String command = JOptionPane.showInputDialog("What command would you like to execute?\n(help to get list of commands)");
-        while(command != null){
+        while (command != null) {
             if (command.equalsIgnoreCase("change name") || command.equalsIgnoreCase("cn")) {
                 String id = JOptionPane.showInputDialog("What Id");
                 String name = JOptionPane.showInputDialog("What is the new name?");
@@ -154,28 +151,28 @@ public class Main {
             } else if (command.equalsIgnoreCase("write file") || command.equalsIgnoreCase("wf")) {
                 admin.writeFile(writePath);
                 JOptionPane.showMessageDialog(null, "Writing file");
-            }else if (command.equalsIgnoreCase("add admin") || command.equalsIgnoreCase("aa")) {
+            } else if (command.equalsIgnoreCase("add admin") || command.equalsIgnoreCase("aa")) {
                 String id = JOptionPane.showInputDialog("Which Id should be granted admin?");
-                if(id == null){
+                if (id == null) {
                     continue;
-                }else{
+                } else {
                     id = id.toLowerCase();
                 }
                 int adminConfirm = JOptionPane.showConfirmDialog(null, "Are you sure?", "Confirm", JOptionPane.YES_NO_OPTION);
-                if(adminConfirm == 0){
+                if (adminConfirm == 0) {
                     String password = JOptionPane.showInputDialog("What should the password be?");
-                    if(password == null){
+                    if (password == null) {
                         JOptionPane.showMessageDialog(null, "Cancelling Create Admin");
                         continue;
-                    }else{
+                    } else {
                         boolean adminSuccess = admin.addAdmin(id, password);
-                        if(adminSuccess){
+                        if (adminSuccess) {
                             JOptionPane.showMessageDialog(null, "Admin created");
-                        }else{
+                        } else {
                             JOptionPane.showMessageDialog(null, "Admin Creation failed. Check the id.");
                         }
                     }
-                }else{
+                } else {
                     continue;
                 }
             } else if (command.equalsIgnoreCase("help")) {
@@ -187,92 +184,108 @@ public class Main {
         }
     }
 
-    static boolean checkPassword(String pass, String memberId){
+    static boolean checkPassword(String pass, String memberId) {
         MemberDatabase passwordDatabase = new MemberDatabase(serverName, port, databaseName, user, dbPassword);
         String passHash = Password.hashPassword(pass, memberId);
         String userPass = passwordDatabase.getPassword(memberId);
-        if(userPass.length() < 1){
+        if (userPass.length() < 1) {
             return true;
         }
         return userPass.equals(passHash);
     }
 
-    static boolean setConfig(){
+    static boolean setConfig() {
         IniFileReader config = new IniFileReader(configPath);
-        IniProperty [] configList = config.readFile();
-        for(IniProperty i : configList){
-            switch(i.name){
-                case "maxNameLength": maxNameLength = Integer.parseInt(i.value);
+        IniProperty[] configList = config.readFile();
+        for (IniProperty i : configList) {
+            switch (i.name) {
+                case "maxNameLength":
+                    maxNameLength = Integer.parseInt(i.value);
                     break;
-                case "minNameLength": minNameLength = Integer.parseInt(i.value);
+                case "minNameLength":
+                    minNameLength = Integer.parseInt(i.value);
                     break;
-                case "minNameNumbers": minNameNumbers = Integer.parseInt(i.value);
+                case "minNameNumbers":
+                    minNameNumbers = Integer.parseInt(i.value);
                     break;
-                case "minNameLetters": minNameLetters = Integer.parseInt(i.value);
+                case "minNameLetters":
+                    minNameLetters = Integer.parseInt(i.value);
                     break;
-                case "minNameSymbols": minNameSymbols = Integer.parseInt(i.value);
+                case "minNameSymbols":
+                    minNameSymbols = Integer.parseInt(i.value);
                     break;
-                case "maxIdLength": maxIdLength = Integer.parseInt(i.value);
+                case "maxIdLength":
+                    maxIdLength = Integer.parseInt(i.value);
                     break;
-                case "minIdLength": minIdLength = Integer.parseInt(i.value);
+                case "minIdLength":
+                    minIdLength = Integer.parseInt(i.value);
                     break;
-                case "minIdNumbers": minIdNumbers = Integer.parseInt(i.value);
+                case "minIdNumbers":
+                    minIdNumbers = Integer.parseInt(i.value);
                     break;
-                case "minIdLetters": minIdLetters = Integer.parseInt(i.value);
+                case "minIdLetters":
+                    minIdLetters = Integer.parseInt(i.value);
                     break;
-                case "minIdSymbols": minIdSymbols = Integer.parseInt(i.value);
+                case "minIdSymbols":
+                    minIdSymbols = Integer.parseInt(i.value);
                     break;
-                case "serverIp": serverName = i.value;
+                case "serverIp":
+                    serverName = i.value;
                     break;
-                case "port": port = Integer.parseInt(i.value);
+                case "port":
+                    port = Integer.parseInt(i.value);
                     break;
-                case "databaseName": databaseName = i.value;
+                case "databaseName":
+                    databaseName = i.value;
                     break;
-                case "user": user = i.value;
+                case "user":
+                    user = i.value;
                     break;
-                case "password": dbPassword = i.value;
+                case "password":
+                    dbPassword = i.value;
                     break;
-                default: System.out.println("Unknown config option");
+                default:
+                    System.out.println("Unknown config option");
             }
         }
         return true;
     }
 
-    static void start(){
+    static void start() {
         setConfig();
         store = new MemberDatabase(serverName, port, databaseName, user, dbPassword);
-        while(true){
+        while (true) {
             setConfig();
-            if(!store.active){ // If the database can't connect
+            if (!store.active) { // If the database can't connect
                 try {
                     Thread.sleep(2000);
-                }catch(InterruptedException e){
-                    System.out.println("Interrupted");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 store = new MemberDatabase(serverName, port, databaseName, user, dbPassword); //Retries
                 int option = JOptionPane.showConfirmDialog(null, "Database connection inactive. Press Ok to retry or Cancel to quit.\n(If the problem persists tell a software team member, if you are a software team member then check the config.ini)", "No Connection", JOptionPane.OK_CANCEL_OPTION);
-                if(option == 1){
+                if (option == 1) {
                     System.exit(0);
-                }else{
+                } else {
                     continue;
                 }
             }
 
             String id = getUserId();  //Gets the name based on the ID from the database
             String status = "member";
-            if(id == null){ //Id is null if the user presses cancel. Cancel means exit.
+            if (id == null) { //Id is null if the user presses cancel. Cancel means exit.
                 int option = JOptionPane.showConfirmDialog(null, "Do you really want to quit?", "Do you really want to quit?", JOptionPane.YES_NO_OPTION);
-                if(option == 0){
+                if (option == 0) {
                     break;
-                }else{
+                } else {
                     continue;
                 }
-            }else{
+            } else {
                 id = id.toLowerCase();
                 status = store.getStatus(id);
             }
 
-            if(status.equals("admin")){
+            if (status.equals("admin")) {
                 store.updateAttendance(id);
                 JPanel panel = new JPanel();
                 JLabel label = new JLabel("What is your password?");
@@ -283,15 +296,15 @@ public class Main {
                 int option = JOptionPane.showOptionDialog(null, panel, "The title",
                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                         null, options, options[0]);
-                if(option == 0) {
+                if (option == 0) {
                     char[] password = pass.getPassword();
-                    if(checkPassword(new String(password), id)){
+                    if (checkPassword(new String(password), id)) {
                         startAdmin();
-                    }else{
+                    } else {
                         JOptionPane.showMessageDialog(null, "Incorrect password.");
                     }
                 }
-            }else {
+            } else {
                 String name = store.queryMemberName(id);
                 //String pass = store.getPassword(id);
                 if (name.equals("-1")) { //
@@ -309,9 +322,9 @@ public class Main {
                     String pass = JOptionPane.showInputDialog("Enter a password or press cancel to have none");
                     if (name != null) { //Name is null if the user presses cancel
                         //If the user doesn't press cancel the database is updated with the new name.
-                        if(pass == null || pass.length()<1) {
+                        if (pass == null || pass.length() < 1) {
                             store.updateAddMember(name, id);
-                        }else{
+                        } else {
                             store.updateAddMember(name, id, pass);
                         }
                     } else {
@@ -320,30 +333,38 @@ public class Main {
                 }
 
                 String userPassword = store.getPassword(id);
-                if(userPassword != null){
+                if (userPassword != null) {
                     String pass = JOptionPane.showInputDialog("What is your password?");
-                    while(true) {
-                        if(pass == null){
+                    while (true) {
+                        if (pass == null) {
                             break;
                         }
                         if (Password.hashPassword(pass, id).equals(userPassword)) {
                             if (store.updateAttendance(id)) {
-                                //System.out.println("Welcome "+name);  //After all the logic is done the user is welcomed
                                 JOptionPane.showMessageDialog(null, "Thanks for coming, " + name + "!");
                                 break;
                             } else {
                                 JOptionPane.showMessageDialog(null, "You can only log in once per meeting " + name + "."); //if false is returned then the person already logged in
                                 break;
                             }
-                        }else{
+                        } else {
                             int incorPassChoice = JOptionPane.showConfirmDialog(null, "Incorrect password.\nWould you like to try again?", "Do you really want to quit?", JOptionPane.YES_NO_OPTION);
-                            if(incorPassChoice == 0){
+                            if (incorPassChoice == 0) {
                                 pass = JOptionPane.showInputDialog("What is your password?");
                                 continue;
-                            }else{
+                            } else {
                                 break;
                             }
                         }
+                    }
+                }else{
+                    if (store.updateAttendance(id)) {
+                        //After all the logic is done the user is welcomed
+                        JOptionPane.showMessageDialog(null, "Thanks for coming, " + name + "!");
+                        continue;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "You can only log in once per meeting " + name + "."); //if false is returned then the person already logged in
+                        continue;
                     }
                 }
             }

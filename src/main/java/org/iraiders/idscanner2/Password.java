@@ -5,14 +5,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Password {
-    static String hashPassword(String password, String salt){
+    static String hashPassword(String password, String salt) {
         password += salt;
         byte[] passHash;
-        try{
+        try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(password.getBytes("UTF-8"));
             passHash = md.digest();
-        }catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             e.printStackTrace();
             passHash = null;
         }
