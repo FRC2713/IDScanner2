@@ -257,17 +257,12 @@ public class Main {
         while (true) {
             setConfig();
             if (!store.active) { // If the database can't connect
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                store = new MemberDatabase(serverName, port, databaseName, user, dbPassword); //Retries
                 int option = JOptionPane.showConfirmDialog(null, "Database connection inactive. Press Ok to retry or Cancel to quit.\n(If the problem persists tell a software team member, if you are a software team member then check the config.ini)", "No Connection", JOptionPane.OK_CANCEL_OPTION);
-                if (option == 1) {
-                    System.exit(0);
-                } else {
+                if (option == 0) {
+                    store = new MemberDatabase(serverName, port, databaseName, user, dbPassword); //Retries
                     continue;
+                } else {
+                    break;
                 }
             }
 
