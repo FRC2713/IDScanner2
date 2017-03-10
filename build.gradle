@@ -28,8 +28,9 @@ dependencies {
 shadowJar {
     baseName = 'shadow'
 }
-/*jar {
-    manifest {
-        attributes 'Main-Class': 'org.iraiders.idscanner2.Main'
+
+jar {
+    manifest{
+        attributes 'version' : '1.0.0'
     }
-}*/
+}

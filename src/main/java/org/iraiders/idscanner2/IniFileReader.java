@@ -43,6 +43,8 @@ public class IniFileReader {
                 writer.println("databaseName=Members");
                 writer.println("user=root");
                 writer.println("password=root");
+                writer.println("[Jar]");
+                writer.println(";jarUrl=");
                 writer.close();
             }
         } catch (IOException e) {

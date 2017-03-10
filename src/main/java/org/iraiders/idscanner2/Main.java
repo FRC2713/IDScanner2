@@ -175,8 +175,25 @@ public class Main {
                 } else {
                     continue;
                 }
+            } else if(command.equalsIgnoreCase("restart") || command.equalsIgnoreCase("re")){
+                JOptionPane.showMessageDialog(null, "Restarting");
+                admin.restart();
+                exit();
+            }else if(command.equalsIgnoreCase("remove user") || command.equalsIgnoreCase("ru")){
+                String id = JOptionPane.showInputDialog("What user should be deleted\n(Does not delete attendance)");
+                if(id != null) {
+                    JOptionPane.showMessageDialog(null, "Removing\n(Does not remove attendance)");
+                    admin.deleteUser(id);
+                    continue;
+                }
+            } else if(command.equalsIgnoreCase("update") || command.equalsIgnoreCase("up")){
+                JOptionPane.showMessageDialog(null, "Updating");
+                boolean success = Updater.updateVersion();
+                if(!success){
+                    JOptionPane.showMessageDialog(null, "Update Failed.");
+                }
             } else if (command.equalsIgnoreCase("help")) {
-                JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file\nAdd Admin (AA): Create a new admin");
+                JOptionPane.showMessageDialog(null, "Get Attendance (GA): Display attendance by ID\nChange Name (CN): Change name by ID\nWrite File (WF): Write full attendance info to file\nAdd Admin (AA): Create a new admin\nUpdate (UP): Download url in config.ini\nRemove User (RU): Delete user by Id");
             } else {
                 JOptionPane.showMessageDialog(null, "That command does not exist");
             }
@@ -243,6 +260,9 @@ public class Main {
                     break;
                 case "password":
                     dbPassword = i.value;
+                    break;
+                case "jarUrl":
+                    Updater.jarUrl = i.value;
                     break;
                 default:
                     System.out.println("Unknown config option");
@@ -367,5 +387,11 @@ public class Main {
         //When the while loop is broken out of all the connections to the database are closed using database.exit();
         System.out.println("Robots don't quit... \nBut this isn't a Robot!");
         store.exit();
+    }
+
+    static void exit(){
+        System.out.println("Robots don't quit... \nBut this isn't a Robot!");
+        store.exit();
+        System.exit(0);
     }
 }

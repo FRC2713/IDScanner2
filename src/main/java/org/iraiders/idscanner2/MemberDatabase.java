@@ -136,8 +136,6 @@ public class MemberDatabase extends Database {
         return name;
     }
 
-    //SELECT * FROM Members.members WHERE memberId='600740';
-    //named update because it update data instead of reading it.
     public boolean updateAddMember(String name, String id, String pass) {
         String hashPass = Password.hashPassword(pass, id);
         try {

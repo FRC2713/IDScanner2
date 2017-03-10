@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.lang.Runtime;
 
 public class AdminCommands extends Database {
     private Statement stmt;
@@ -16,6 +17,58 @@ public class AdminCommands extends Database {
     public AdminCommands(String serverN, int port, String databaseN, String user, String pass) {
         super(serverN, port, databaseN, user, pass);
         store = new MemberDatabase(serverN, port, databaseN, user, pass);
+    }
+
+    public static boolean restart(){
+        String os;
+        String systemOs = System.getProperty("os.name").toLowerCase();
+
+        if(systemOs.contains("win")){
+            os = "win";
+            String filePath = "./IDScanner2.bat";
+            Path p = Paths.get(filePath);
+            p = p.toAbsolutePath();
+            String fullFilePath = p.toString();
+
+            String[] cmd = {"cmd", "/C", fullFilePath};
+            try {
+                Runtime.getRuntime().exec(cmd);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }else if(systemOs.contains("mac")){
+            os = "mac";
+            String filePath = "./IDScanner2";
+            Path p = Paths.get(filePath);
+            p = p.toAbsolutePath();
+            String fullFilePath = p.toString();
+
+            String[] cmd = {"/bin/sh", "-c", fullFilePath};
+            try {
+                Runtime.getRuntime().exec(cmd);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }else if(systemOs.contains("nix") || systemOs.contains("nux") || systemOs.contains("aix") ){
+            os = "lin";
+
+        }else{
+            os = null;
+        }
+
+        return true;
+    }
+
+    public boolean deleteUser(String id){
+        try{
+            pstmt = conn.prepareStatement("DELETE FROM members WHERE memberId=?");
+            pstmt.setString(1, id);
+            pstmt.execute();
+            return true;
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean addAdmin(String adminId, String password) {
@@ -98,6 +151,7 @@ public class AdminCommands extends Database {
                     statusString = String.format("| Status: %-7.6s", store.getStatus(memberIds.get(i)));
                     attendanceString = String.format("| Meetings Attended: %3.3s", membersAttendance[i][0]);
                     percentageString = String.format("| Percentage Attended: %4.4s", membersAttendance[i][1] + "%");
+
                     writer.println(nameString + idString + statusString + attendanceString + percentageString + "\n");
                 }
                 writer.close();
